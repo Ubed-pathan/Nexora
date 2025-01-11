@@ -13,6 +13,8 @@ const Home = () => {
         <PostCard avtar={man} title="hello" desc="hello" date="1122" userName="asa" blogImage={man} />
         <PostCard avtar={man} title="hello" desc="hello" date="1122" userName="asa" blogImage={man} />
       </div>
+
+      
     </div>
   );
 };
