@@ -5,3 +5,33 @@
 body{
     background-color: #EEEBDD;
 }
+
+/* Tailwind CSS doesn't support direct scrollbar color customization, so you can add this in a CSS file */
+::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background-color: #C7B198; /* Change to your desired color */
+    border-radius: 10px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    background-color: #DFD3C3; /* Change to your desired color */
+  }
+
+
+
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: #52616B; /* Customize this color */
+    border-radius: 10px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background-color: #DFD3C3; /* Customize this color */
+  }
+  

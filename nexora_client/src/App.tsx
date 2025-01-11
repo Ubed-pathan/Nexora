@@ -7,14 +7,17 @@ import BottomNav from './components/BottomNav';
 import Search from './pages/Search';
 import AllUsers from './pages/AllUsers';
 import Saved from './pages/Saved';
+import { Suggestions } from './components/Suggestions';
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen flex">
-        <SideNav />
+        <div className="hidden md:block md:w-[20%]">
+          <SideNav />
+        </div>
         <TopNav />
-        <main className="flex-grow p-4 md:ml-64 my-8">
+        <main className='mt-11 w-[100%] md:mt-0 md:w-[60%]'>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/search" element={<Search />} />
@@ -23,6 +26,9 @@ function App() {
             <Route path="/profile" element={<Profile />} />
           </Routes>
         </main>
+        <div className='md:w-[25%]'>
+          <Suggestions />
+        </div>
         <BottomNav />
       </div>
     </Router>
