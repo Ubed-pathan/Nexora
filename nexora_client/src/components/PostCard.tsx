@@ -23,12 +23,13 @@ export default function PostCard({
 
   return (
     <div
-      className="w-full bg-bg-200 border border-primary-100 shadow-lg rounded-lg p-6 mb-6"
+      className="w-full bg-bg-200 md:border md:border-primary-100 shadow-lg md:rounded-lg mb-3 md:mb-6"
       onClick={() => {
         if (clickOnThreeDots) setClickOnThreeDots(false);
       }}
     >
-      <div className=" flex justify-between items-center mb-4">
+      <div className="p-3">
+      <div className=" flex justify-between items-center">
         <div className="flex items-center gap-4">
           <div className="h-12 w-12 border-2 border-primary-100 rounded-full overflow-hidden">
             <img src={avtar} alt="Avatar" className="object-cover w-full h-full" />
@@ -57,9 +58,10 @@ export default function PostCard({
           )}
         </div>
       </div>
+      </div>
 
-      <div className="mb-4">
-        <div className="w-full aspect-w-16 aspect-h-9 rounded-lg overflow-hidden">
+      <div className="md:px-3">
+        <div className="w-full aspect-w-16 aspect-h-9 md:rounded-lg overflow-hidden">
           <img
             src={blogImage}
             alt="Blog"
@@ -67,10 +69,11 @@ export default function PostCard({
           />
         </div>
       </div>
-      <h2 className="text-xl font-semibold text-gray-800 mb-2">{title}</h2>
-      <p className="text-gray-600 mb-4">{desc}</p>
+      <h2 className="text-xl font-semibold text-gray-800 mb-1 px-2">{title}</h2>
+      <p className="text-gray-600 mb-2 px-2">{desc}</p>
 
-      <div className="flex justify-between items-center">
+      <div className="px-3 pb-3">
+         <div className="flex justify-between items-center">
         <div className="flex items-center gap-4 text-gray-600">
           <SlLike size={25} className="cursor-pointer" />
           <SlDislike size={25} className="cursor-pointer" />
@@ -82,7 +85,7 @@ export default function PostCard({
         >
           Read More
         </div>
-      </div>
+      </div></div>
     </div>
   );
 }

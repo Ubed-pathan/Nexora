@@ -12,7 +12,7 @@ import { Suggestions } from './components/Suggestions';
 function App() {
   return (
     <Router>
-      <div className="min-h-screen flex">
+      <div className="md:min-h-screen md:flex">
         <div className="hidden md:block md:w-[20%]">
           <SideNav />
         </div>
