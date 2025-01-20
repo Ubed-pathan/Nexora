@@ -1,4 +1,4 @@
-import PostCard from "../components/PostCard";
+import PostCard from "../components/PostCardForHome";
 import man from '../assets/man.png';
 import ubed1 from '../assets/1701612771662.jpg'
 import ubed2 from '../assets/Picsart_24-04-14_15-49-05-429.jpg'

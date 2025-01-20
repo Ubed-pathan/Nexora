@@ -4,7 +4,7 @@ import { SlDislike } from "react-icons/sl";
 import { MdOutlineInsertComment } from "react-icons/md";
 import React from "react";
 
-export default function PostCard({
+export default function PostCardForHome({
   avtar,
   title,
   desc,
