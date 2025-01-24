@@ -3,6 +3,7 @@ import { useSetRecoilState } from 'recoil'
 import axios from 'axios'
 import { authState } from '../recoilStates/auth/atom'
 
+
 const UserState = () => {
     const [loading, setLoading] = useState(true); 
     const setAuthState = useSetRecoilState(authState)
@@ -16,21 +17,28 @@ const UserState = () => {
             })
 
             if(response.status == (200)){
-
                 console.log(response.data)
                 setAuthState({
                     isLoggedIn : true,
+                    id: response.data.id,
                     username: response.data.username,
                     email: response.data.email,
                     profileImageUrl: response.data.profileImageUrl,
+                    posts: response.data.posts,
+                    followers: response.data.followers,
+                    following: response.data.following
                 })
             }
             else{
                 setAuthState({
                     isLoggedIn : false,
+                    id : null,
                     username: null,
                     email: null,
                     profileImageUrl: null,
+                    posts: null,
+                    following: null,
+                    followers: null,
                 })
             }
           }

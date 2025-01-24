@@ -6,8 +6,11 @@ import { RiSearchLine } from "react-icons/ri";
 import { LuSaveAll } from "react-icons/lu";
 import { IoPeopleOutline } from "react-icons/io5";
 import { FiLogOut } from "react-icons/fi";
+import { authState } from '../recoilStates/auth/atom'
+import { useRecoilValue } from 'recoil';
 
 export default function SideNav() {
+    const auth = useRecoilValue(authState);
     return (
         <div className="h-screen bg-bg-300 border-r border-primary-100 text-text-100 p-4" style={{ borderRightWidth: '1px' }}>
             <div className="flex flex-col items-center justify-center gap-y-2">
@@ -17,14 +20,16 @@ export default function SideNav() {
                 </div>
                 <hr className="my-1 w-[100%] bg-primary-100 h-px border-none" />
                 <div className="w-14 h-14 rounded-full border border-text-100 p-1 flex items-center justify-center">
-                    <img src={man} alt="avtar" className="w-full h-full rounded-full" />
+                    <img src={
+                        auth.profileImageUrl ? auth.profileImageUrl : man
+                    } alt="avtar" className="w-full h-full rounded-full" />
                 </div>
 
                 <div>
-                    <h2>UserName</h2>
+                    <h2>{auth.username}</h2>
                 </div>
                 <div>
-                    <h4>Email</h4>
+                    <h4>{auth.email}</h4>
                 </div>
             </div>
             <hr className="my-4 bg-text-200  h-0.5 border-none" />

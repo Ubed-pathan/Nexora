@@ -37,6 +37,7 @@ function SignIn() {
             });
 
         if (response.status === 200) {
+            console.log(response.data)
             toast.success("😄 signed in successfully", {
                 position: "top-center",
                 autoClose: 1000,
@@ -56,9 +57,14 @@ function SignIn() {
 
             setAuthState(
                 {
-                isLoggedIn:true,
-                username: "adam",
-                email: "adam"
+                    isLoggedIn : true,
+                    id: response.data.id,
+                    username: response.data.username,
+                    email: response.data.email,
+                    profileImageUrl: response.data.profileImageUrl,
+                    posts: response.data.posts,
+                    followers: response.data.followers,
+                    following: response.data.following
                 }
             )
 
