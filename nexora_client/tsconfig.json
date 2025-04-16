@@ -1,4 +1,13 @@
 {
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

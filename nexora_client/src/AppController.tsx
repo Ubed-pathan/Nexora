@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { authState } from './recoilStates/auth/atom'
 import SideNav from "./components/SideNav";
@@ -13,10 +12,11 @@ import SignUp from "./components/SignUp";
 import SignIn from "./components/SignIn";
 import TopNav from "./components/TopNav";
 import BottomNav from "./components/BottomNav";
-import CircularProgress from "@mui/material/CircularProgress";
 import UserState from "./components/UserState";
 
-function ProtectedRoute({ element, isLoggedIn }) {
+import { ReactElement } from "react";
+
+function ProtectedRoute({ element, isLoggedIn }: { element: ReactElement; isLoggedIn: boolean }) {
     console.log(isLoggedIn)
     return isLoggedIn ? element : <Navigate to="/signin" />;
 }
@@ -24,7 +24,7 @@ function ProtectedRoute({ element, isLoggedIn }) {
 
 export function MainApp() {
     const auth = useRecoilValue(authState);
-    const setAuthState = useSetRecoilState(authState);
+    // const setAuthState = useSetRecoilState(authState);
     const {loading} = UserState();
     const location = useLocation();  // Get the current location
 

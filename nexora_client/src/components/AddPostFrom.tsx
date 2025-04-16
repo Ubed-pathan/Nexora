@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { PlusCircle, XCircle } from "lucide-react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import axios from "axios";
 
