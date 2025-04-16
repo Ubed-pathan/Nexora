@@ -1,15 +1,16 @@
-import React,{useEffect, useState} from 'react'
+import {useEffect, useState} from 'react'
 import { useSetRecoilState } from 'recoil'
 import axios from 'axios'
-import { authState } from '../recoilStates/auth/atom'
+import { authState, refreshUserState } from '../recoilStates/auth/atom'
+import { useRecoilValue } from 'recoil'
 
 
 const UserState = () => {
     const [loading, setLoading] = useState(true); 
     const setAuthState = useSetRecoilState(authState)
+    const refresh = useRecoilValue(refreshUserState)
         useEffect(
           () => {
-            console.log("user state called")
           async function getUserState() {
             try{
             const response = await axios.get(`${import.meta.env.VITE_SERVER_API}/check-userstate`,{
@@ -51,7 +52,7 @@ const UserState = () => {
         }
           
           getUserState();
-        }, [])
+        }, [refresh.isRefreshed])
         return { loading };
 };
 

@@ -1,13 +1,17 @@
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/nexora
-    username: postgres
-    password: Ubed@818
+    url: ${DATABASE_URL}
+    username: ${USER_NAME}
+    password: ${PASSWORD}
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: update
     database: postgresql
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
 
 server:
   port: 8484

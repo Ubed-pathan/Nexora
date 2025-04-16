@@ -3,12 +3,16 @@ package com.ubedpathan.Nexora.services;
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
 import com.ubedpathan.Nexora.auth.CustomAuthenticationToken;
+import com.ubedpathan.Nexora.dtos.AllUserResponseDto;
 import com.ubedpathan.Nexora.dtos.SignInDto;
 import com.ubedpathan.Nexora.dtos.SignUpDto;
 import com.ubedpathan.Nexora.models.UserEntity;
+import com.ubedpathan.Nexora.repositories.FollowersRepository;
 import com.ubedpathan.Nexora.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -18,8 +22,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -28,6 +35,9 @@ public class UserServices {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private FollowersRepository followersRepository;
 
     // it is come from security config
     @Autowired
@@ -97,7 +107,7 @@ public class UserServices {
                 userEntity.setSecureImageUrl(null);
                 userEntity.setFormat(null);
             }
-            Map<String, Object> uploadResult = this.cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "user_profiles", "public_id", userEntity.getId()));
+            Map<String, Object> uploadResult = this.cloudinary.uploader().upload(file.getBytes(), ObjectUtils.asMap("folder", "nexora_user_profiles", "public_id", userEntity.getId()));
             userEntity.setProfileImageURLPublicId((String) uploadResult.get("public_id"));
             userEntity.setProfileImageURL((String) uploadResult.get("url"));
             userEntity.setSecureImageUrl((String) uploadResult.get("secure_url"));
@@ -112,4 +122,51 @@ public class UserServices {
             return false;
         }
     }
+
+    public List<UserEntity> handleGetSearchUsers(String query) {
+        return userRepository.findByUsernameContainingIgnoreCase(query);
+    }
+
+    public List<AllUserResponseDto> handleGetAllUsers() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Map<String, Object> userData = null;
+
+        if (authentication instanceof CustomAuthenticationToken customAuthenticationToken) {
+            userData = customAuthenticationToken.getUserData();
+        }
+
+        if (userData == null) {
+            return null;
+        }
+
+        String currentUsername = userData.get("username").toString();
+        // ✅ Define currentUser here
+        UserEntity currentUser = userRepository.findByUsername(currentUsername).orElse(null);
+        if (currentUser == null) {
+            return null;
+        }
+
+        List<UserEntity> allusers = userRepository.findAllByUsernameNot(currentUsername);
+
+        return allusers.stream()
+                .map(user -> {
+                    boolean isFollowing = followersRepository.existsByFollowerIdAndFolloweeId(currentUser.getId(), user.getId());
+                    return new AllUserResponseDto(user, isFollowing);
+                })
+                .collect(Collectors.toList());
+    }
+
+    public List<UserEntity> getSuggestedUsers(String currentUserId) {
+        // Get list of followed user IDs
+        Set<String> followedUserIds = followersRepository.findFollowedUserIdsByUserId(currentUserId);
+
+        // Add current user ID to exclude list
+        followedUserIds.add(currentUserId);
+
+        // Limit result to 10 users
+        Pageable pageable = PageRequest.of(0, 10);
+
+        return userRepository.findRandomUsersExcludingIds(followedUserIds, pageable);
+    }
+
 }

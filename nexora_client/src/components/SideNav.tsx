@@ -1,16 +1,47 @@
 import { Link } from 'react-router-dom';
 import avtar from '../assets/icon.png';
-import man from '../assets/man.png';
+import man from '../assets/OIP.jpg';
 import { IoHomeOutline } from "react-icons/io5";
 import { RiSearchLine } from "react-icons/ri";
 import { LuSaveAll } from "react-icons/lu";
 import { IoPeopleOutline } from "react-icons/io5";
 import { FiLogOut } from "react-icons/fi";
 import { authState } from '../recoilStates/auth/atom'
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import axios from 'axios';
 
 export default function SideNav() {
     const auth = useRecoilValue(authState);
+    const setAuth = useSetRecoilState(authState);
+
+    async function logout(): Promise<void> {
+        try {
+            const response = await axios.post(`${import.meta.env.VITE_SERVER_API}/user/logout`,{}, {
+                withCredentials: true
+            });
+            console.log(response);
+            if (response.status === 200) {
+                setAuth(
+                    {
+                        isLoggedIn: false,
+                        username: null,
+                        email: null,
+                        profileImageUrl: null,
+                        id: null,
+                        following: null,
+                        followers: null
+                    }
+                )
+            }
+            else {
+                //
+            }
+
+        } catch (error) {
+            // console.log(error);
+        }
+    }
+
     return (
         <div className="h-screen bg-bg-300 border-r border-primary-100 text-text-100 p-4" style={{ borderRightWidth: '1px' }}>
             <div className="flex flex-col items-center justify-center gap-y-2">
@@ -49,14 +80,14 @@ export default function SideNav() {
                     </li>
                     <li className='hover hover:bg-bg-200 w-full rounded-lg p-3 transform duration-300'>
                     <Link to='/profile' className='flex gap-3'>
-                    <div className="w-8 h-8 rounded-full border border-primary-100 p-1 flex items-center justify-center">
-                    <img src={man} alt="avtar" className="w-full h-full rounded-full" />
+                    <div className="w-8 h-8 rounded-full border border-primary-100 p-[2px] flex items-center justify-center">
+                    <img src={auth.profileImageUrl || man} alt="avtar" className="w-full h-full rounded-full" />
                     </div>
                     <span>Profile</span>
                     </Link>
                     </li>
-                    <li className='hover hover:bg-bg-200 w-full rounded-lg p-3 transform duration-300'>
-                        <Link to="/saved" className='flex justify-start gap-5'><FiLogOut size={25} className='text-primary-100'/><span>LogOut</span></Link>
+                    <li className='hover hover:bg-bg-200 w-full rounded-lg p-3 transform duration-300' onClick={logout}>
+                        <Link to="/signin" className='flex justify-start gap-5'><FiLogOut size={25} className='text-primary-100'/><span>Logout</span></Link>
                     </li>
                 </ul>
             </nav>

@@ -29,7 +29,8 @@ export function MainApp() {
     const location = useLocation();  // Get the current location
 
     const showSuggestions = ["/", "/search", "/allusers"].includes(location.pathname);
-
+    console.log("hello")
+    console.log(auth.isLoggedIn)
     // useEffect(() => {
     //     async function checkLoginStatus() {
     //         try {
@@ -61,7 +62,7 @@ export function MainApp() {
     // }
 
     if (loading) {
-        return <div>Loading...</div>; // Show a loading indicator or nothing
+        return <div>Loading...</div>;
     }
     
     return (

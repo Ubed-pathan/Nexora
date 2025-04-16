@@ -14,7 +14,7 @@ function SignIn() {
 
     const navigate = useNavigate();
     const setAuthState = useSetRecoilState(authState);
-    const authValue = useRecoilValue(authState);
+    const authValue = useRecoilValue(authState);    
     const [signInData, setSignInData] = useState<SignInDataType>({
         username: '',
         password: ''
@@ -62,7 +62,6 @@ function SignIn() {
                     username: response.data.username,
                     email: response.data.email,
                     profileImageUrl: response.data.profileImageUrl,
-                    posts: response.data.posts,
                     followers: response.data.followers,
                     following: response.data.following
                 }
@@ -90,9 +89,13 @@ function SignIn() {
             });
 
             setAuthState({
-                isLoading: false,
+                isLoggedIn: false,
+                id: null,
                 username: null,
-                email:null
+                email: null,
+                profileImageUrl: null,
+                followers: null,
+                following: null
             })
         }
     }

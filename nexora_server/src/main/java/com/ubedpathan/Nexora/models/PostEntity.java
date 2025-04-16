@@ -1,52 +1,61 @@
-package com.ubedpathan.Nexora.models;
+    package com.ubedpathan.Nexora.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import lombok.*;
+    import com.fasterxml.jackson.annotation.JsonIgnore;
+    import jakarta.persistence.*;
+    import lombok.*;
+    import org.hibernate.annotations.BatchSize;
 
-@EqualsAndHashCode(callSuper = true)
-@Data
-@Entity
-@NoArgsConstructor
-@AllArgsConstructor
-@Getter
-@Setter
-public class PostEntity extends BaseEntity{
+    import java.util.ArrayList;
+    import java.util.List;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    @JsonIgnore
-    private UserEntity userEntity;
+    @EqualsAndHashCode(callSuper = true)
+    @Data
+    @Entity
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public class PostEntity extends BaseEntity{
 
-    @Column(
-            nullable = false
-    )
-    private String imageUrl;
+        @ManyToOne
+        @JoinColumn(name = "user_id", nullable = false)
+        @JsonIgnore
+        @ToString.Exclude
+        private UserEntity userEntity;
 
-    @Column(
-            nullable = false
-    )
-    private String imagePublicId;
+        @Column(
+                nullable = false
+        )
+        private String imageUrl;
 
-    @Column(
-            nullable = false
-    )
-    private String secureImageUrl;
+        @Column(
+                nullable = false
+        )
+        private String imagePublicId;
 
-    @Column(
-            nullable = false
-    )
-    private String format;
+        @Column(
+                nullable = false
+        )
+        private String secureImageUrl;
 
-    @Column(
-            nullable = false
-    )
-    private String description;
+        @Column(
+                nullable = false
+        )
+        private String format;
 
-    private int likes;
+        @Column(
+                nullable = false
+        )
+        private String description;
 
-    private int disLikes;
-}
+
+        @OneToMany(mappedBy = "likedPost", cascade = CascadeType.ALL, orphanRemoval = true)
+        @BatchSize(size = 50)
+        @JsonIgnore
+        private List<LikeEntity> likes = new ArrayList<>();
+
+        @OneToMany(mappedBy = "disLikedPost", cascade = CascadeType.ALL, orphanRemoval = true)
+        @BatchSize(size = 50)
+        @JsonIgnore
+        private List<DisLikeEntity> disLikes = new ArrayList<>();
+    }

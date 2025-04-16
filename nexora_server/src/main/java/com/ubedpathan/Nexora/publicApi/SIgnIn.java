@@ -2,6 +2,7 @@ package com.ubedpathan.Nexora.publicApi;
 
 import com.ubedpathan.Nexora.dtos.SignInDto;
 import com.ubedpathan.Nexora.models.UserEntity;
+import com.ubedpathan.Nexora.repositories.FollowersRepository;
 import com.ubedpathan.Nexora.repositories.UserRepository;
 import com.ubedpathan.Nexora.services.UserServices;
 import jakarta.servlet.http.Cookie;
@@ -29,6 +30,9 @@ public class SIgnIn {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private FollowersRepository followersRepository;
+
     @PostMapping("/signin")
     public ResponseEntity<?> handleUserSignIn(@Valid @RequestBody SignInDto request, HttpServletResponse response){
         String token = userServices.handleUserSignIn(request);
@@ -47,13 +51,19 @@ public class SIgnIn {
 
         Map<String, String> requiredUserData = new HashMap<>();
         Optional<UserEntity> userEntity= userRepository.findByUsername(request.username());
+
+        UserEntity user = userEntity.get();
+
+        long followersCount = followersRepository.countByFollowee(user);
+        long followingCount = followersRepository.countByFollower(user);
+
         requiredUserData.put("id", userEntity.get().getId());
         requiredUserData.put("username", request.username());
         requiredUserData.put("email", userEntity.get().getEmail());
         requiredUserData.put("profileImageUrl", userEntity.get().getProfileImageURL());
         requiredUserData.put("posts", String.valueOf(userEntity.get().getTotalPosts()));
-        requiredUserData.put("following", String.valueOf(userEntity.get().getFollowing()));
-        requiredUserData.put("followers", String.valueOf(userEntity.get().getFollowers()));
+        requiredUserData.put("following", String.valueOf(followingCount));
+        requiredUserData.put("followers", String.valueOf(followersCount));
         return ResponseEntity.ok(requiredUserData);
     }
 }

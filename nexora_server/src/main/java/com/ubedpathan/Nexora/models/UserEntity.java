@@ -1,5 +1,6 @@
 package com.ubedpathan.Nexora.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -52,17 +53,30 @@ public class UserEntity extends BaseEntity {
 
     private String format;
 
-    private int followers = 0;
+    @OneToMany(mappedBy = "followee", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @ToString.Exclude
+//    if i want to retrieve my followers mean other follows me then i look for followee mean in database where followee id is my id then
+//    other user is my follower
+    private List<FollowersEntity> followers = new ArrayList<>();
 
-    private int following = 0;
+    @OneToMany(mappedBy = "follower", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @ToString.Exclude
+//    if want to retrieve my following mean i followed other, then i look for in database where follower id is my id then followee is other user
+    private List<FollowersEntity> following = new ArrayList<>();
 
     private int totalPosts = 0;
 
     @OneToMany(mappedBy = "userEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    @ToString.Exclude
     private List<PostEntity> postEntities = new ArrayList<>();
 
     public void addPost(PostEntity post) {
         post.setUserEntity(this);
-        this.postEntities.add(post);
+        if (!this.postEntities.contains(post)) {
+            this.postEntities.add(post);
+        }
     }
 }
