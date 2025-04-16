@@ -20,7 +20,6 @@ interface CommentPageProps {
     secureImageUrl: string;}[];
   onAddComment?: (postId:string, message: string) => void;
   handleDelete?: (commentId: string) => void;
-  handleCloseComment: () => void;
 }
 
 const CommentPage: React.FC<CommentPageProps> = ({
@@ -30,7 +29,6 @@ const CommentPage: React.FC<CommentPageProps> = ({
   comments,
   onAddComment,
   handleDelete,
-  handleCloseComment,
 }) => {
   const [activeTab, setActiveTab] = useState<"like" | "dislike" | "comment">(
     "comment"

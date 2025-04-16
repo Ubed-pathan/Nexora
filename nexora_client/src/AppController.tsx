@@ -1,4 +1,4 @@
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilValue } from "recoil";
 import { authState } from './recoilStates/auth/atom'
 import SideNav from "./components/SideNav";
 import { Suggestions } from "./components/Suggestions";

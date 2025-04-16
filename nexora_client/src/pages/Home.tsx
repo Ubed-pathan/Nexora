@@ -259,7 +259,6 @@ if(response.status === 200){
           dislikedUsers={dislikedUsers}
           comments={comments}
           handleDelete={handleDelete}
-          handleCloseComment={handleCloseComment}
           onAddComment={handleAddComment}
         />
       </div>

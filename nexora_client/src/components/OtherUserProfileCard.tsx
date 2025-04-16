@@ -2,7 +2,7 @@
     import defaultDp from "../assets/OIP.jpg";
     import { authState, refreshUserState } from "../recoilStates/auth/atom";
     import { useRecoilValue, useSetRecoilState } from "recoil";
-    import { useEffect, useState, useRef } from "react";
+    import { useEffect, useState } from "react";
     import axios from "axios";
 
     interface Post {

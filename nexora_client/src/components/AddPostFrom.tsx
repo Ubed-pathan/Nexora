@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import axios from "axios";
+import { XCircle } from "lucide-react";
 
 interface AddPostFormProps {
   isOpen: boolean;
