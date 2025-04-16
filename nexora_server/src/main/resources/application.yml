@@ -14,7 +14,7 @@ spring:
       max-request-size: 5MB
 
 server:
-  port: 8484
+  port: ${PORT}
   servlet:
     context-path: /nexora
 
