@@ -159,7 +159,7 @@ const AllUsers = () => {
             </div>
           )}
 
-          {allUsers.length !== 0 ? (
+          {!loading && allUsers.length !== 0 ? (
             <div className="space-y-2 w-full">
               {allUsers.map((user) => {
                 return (
@@ -182,7 +182,9 @@ const AllUsers = () => {
                 );
               })}
             </div>
-          ) : (
+          ) : null}
+
+          {!loading && allUsers.length === 0 && (
             <div className="flex justify-center items-center">
               <h1 className="text-text-100 font-semibold">No Users Found</h1>
             </div>
