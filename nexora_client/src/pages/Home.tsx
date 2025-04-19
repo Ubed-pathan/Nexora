@@ -17,7 +17,7 @@ interface Comment {
   commentId: string;
   message: string;
   user: UserBasicInfo;
-} 
+}
 
 interface PostResponseDto {
   id: string;
@@ -40,12 +40,12 @@ const Home = () => {
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef<HTMLDivElement | null>(null);
   const [lastPostDate, setLastPostDate] = useState<string | null>(null);
-  const [likedUsers , setLikedUsers] = useState<UserBasicInfo[]>([]);
-  const [dislikedUsers , setDislikedUsers] = useState<UserBasicInfo[]>([]);
-  const [comments , setComments] = useState<Comment[]>([]);
+  const [likedUsers, setLikedUsers] = useState<UserBasicInfo[]>([]);
+  const [dislikedUsers, setDislikedUsers] = useState<UserBasicInfo[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [showComment, setShowComment] = useState(false);
   const [postId, setPostId] = useState<string>();
-  const [refreshOnAddPost, setRefreshOnAddPost] = useState<boolean>(false)
+  const [refreshOnAddPost, setRefreshOnAddPost] = useState<boolean>(false);
 
   const auth = useRecoilValue(authState);
 
@@ -67,14 +67,14 @@ const Home = () => {
       );
       const newPosts = res.data;
       console.log("newPosts", newPosts);
-    
+
       setPosts((prevPosts) => {
         const existingPostIds = new Set(prevPosts.map((post) => post.id));
         console.log("existingPostIds", existingPostIds);
         const uniquePosts = newPosts.filter(
           (post) => !existingPostIds.has(post.id)
         );
-        console.log("uniquePosts", uniquePosts)  
+        console.log("uniquePosts", uniquePosts);
 
         if (uniquePosts.length === 0) {
           setHasMore(false);
@@ -123,26 +123,28 @@ const Home = () => {
   async function handleSave(postId: string) {
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_SERVER_API}/save/${auth.id}/${postId}/post`,{},
+        `${import.meta.env.VITE_SERVER_API}/save/${auth.id}/${postId}/post`,
+        {},
         { withCredentials: true }
       );
       if (response.status === 200) {
-        // 
+        //
       }
-    }
-    catch (error) { 
+    } catch (error) {
       console.error("Error saving post:", error);
     }
   }
 
-  async function handleClickOnComment(postId: string, ) {
+  async function handleClickOnComment(postId: string) {
     posts.forEach((post) => {
       if (post.id === postId) {
         setLikedUsers(post.likedUsers.filter((user) => user.id !== auth.id));
-        setDislikedUsers(post.dislikedUsers.filter((user) => user.id !== auth.id));
+        setDislikedUsers(
+          post.dislikedUsers.filter((user) => user.id !== auth.id)
+        );
       }
-    })  
-    setPostId(postId)
+    });
+    setPostId(postId);
     const response = await axios.get<Comment[]>(
       `${import.meta.env.VITE_SERVER_API}/comment/${postId}/getCommentsForPost`,
       { withCredentials: true }
@@ -150,52 +152,62 @@ const Home = () => {
     if (response.status === 200) {
       setComments(response.data);
       console.log("comments in home", comments);
-    }
-    else if(response.status === 202) {
+    } else if (response.status === 202) {
       // setComments(response.data);
-    }
-    else{
+    } else {
       setComments([]);
     }
 
-    
     setShowComment(true);
-  
-}
+  }
 
-function handleCloseComment() {
-  setLikedUsers([]);
-  setDislikedUsers([]);
-  setComments([]);
-  setShowComment(false);
-}
+  function handleCloseComment() {
+    setLikedUsers([]);
+    setDislikedUsers([]);
+    setComments([]);
+    setShowComment(false);
+  }
 
-async function handleDelete(commentId: string): Promise<void> {
-  if(!commentId){
+  async function handleDelete(commentId: string): Promise<void> {
+    if (!commentId) {
       return;
+    }
+
+    const response = await axios.delete(
+      `${import.meta.env.VITE_SERVER_API}/comment/${commentId}/delete`,
+      {
+        withCredentials: true,
+      }
+    );
+    if (response.status === 200) {
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.commentId !== commentId)
+      );
+    }
   }
 
-  const response = await axios.delete(`${import.meta.env.VITE_SERVER_API}/comment/${commentId}/delete`, {
-    withCredentials: true,
-  })
-  if(response.status === 200){
-    setComments(prevComments => prevComments.filter(comment => comment.commentId !== commentId));
+  async function handleAddComment(
+    postId: string,
+    message: string
+  ): Promise<void> {
+    if (!postId || !message) return;
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_SERVER_API}/comment/${
+        auth.id
+      }/${postId}/addComment`,
+      {
+        message: message,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    if (response.status === 200) {
+      await handleClickOnComment(postId);
+    }
   }
-}
-
-async function handleAddComment(postId:string, message:string): Promise<void>{
-    if(!postId || !message) return;
-
-const response = await axios.post(`${import.meta.env.VITE_SERVER_API}/comment/${auth.id}/${postId}/addComment`,{
-    message: message
-},{
-  withCredentials:true,
-})
-
-if(response.status === 200){
-  await handleClickOnComment(postId);
-}
-}
 
   return (
     <div className="md:h-screen md:overflow-y-scroll md:mx-20 md:scrollbar-thin md:scrollbar-thumb-rounded md:scrollbar-thumb-bg-300 md:scrollbar-track-bg-100">
@@ -233,39 +245,42 @@ if(response.status === 200){
           </div>
         )}
 
-        {loading && <Loader />}
+        {loading && (
+          <div className="flex justify-center items-center h-screen w-screen">
+            <Loader className="w-10 h-10 text-primary-100 animate-spin" />
+          </div>
+        )}
         <div ref={loaderRef}></div>
       </div>
       {showComment && (
-  <>
-    {/* Backdrop */}
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 backdrop-blur-lg mt-0"></div>
+        <>
+          {/* Backdrop */}
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 backdrop-blur-lg mt-0"></div>
 
-    {/* Comments Container */}
-    <div className="fixed inset-0 z-50 flex justify-center items-center h-screen">
-      <div className="bg-bg-300 p-6 rounded-lg w-full max-w-lg shadow-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Comments</h2>
-          <button
-            onClick={handleCloseComment}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            Close
-          </button>
-        </div>
-        <Comment
-          postId={postId}
-          likedUsers={likedUsers}
-          dislikedUsers={dislikedUsers}
-          comments={comments}
-          handleDelete={handleDelete}
-          onAddComment={handleAddComment}
-        />
-      </div>
-    </div>
-  </>
-)}
-
+          {/* Comments Container */}
+          <div className="fixed inset-0 z-50 flex justify-center items-center h-screen">
+            <div className="bg-bg-300 p-6 rounded-lg w-full max-w-lg shadow-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Comments</h2>
+                <button
+                  onClick={handleCloseComment}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  Close
+                </button>
+              </div>
+              <Comment
+                postId={postId}
+                likedUsers={likedUsers}
+                dislikedUsers={dislikedUsers}
+                comments={comments}
+                handleDelete={handleDelete}
+                onAddComment={handleAddComment}
+              />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
