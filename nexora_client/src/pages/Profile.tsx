@@ -471,7 +471,7 @@ await handleClickOnComment(postId);
         />
       )}
       {noPost && <div className="text-black flex flex-col justify-center items-center w-full">No Post</div>}
-      {loading && <div className="flex justify-center items-center h-screen w-full">
+      {loading && <div className="flex flex-col justify-center items-center w-full">
         <Loader className="w-10 h-10 text-primary-100 animate-spin" />
       </div>}
         
