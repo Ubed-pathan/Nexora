@@ -15,6 +15,7 @@ import BottomNav from "./components/BottomNav";
 import UserState from "./components/UserState";
 
 import { ReactElement } from "react";
+import { Loader } from "lucide-react";
 
 function ProtectedRoute({ element, isLoggedIn }: { element: ReactElement; isLoggedIn: boolean }) {
     console.log(isLoggedIn)
@@ -62,7 +63,9 @@ export function MainApp() {
     // }
 
     if (loading) {
-        return <div>Loading...</div>;
+        return <div className="flex justify-center items-center h-screen w-full">
+        <Loader className="w-10 h-10 text-primary-100 animate-spin" />
+      </div>;
     }
     
     return (

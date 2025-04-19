@@ -101,7 +101,7 @@ const Saved = () => {
                 post.dislikedUsers?.some((user) => user.id === auth.id) ?? false
               }
               handleDeletePost={handleDeletePost}
-              userId={auth.id}
+              userId={auth.id ?? ""}
             />
           ))}
         </div>

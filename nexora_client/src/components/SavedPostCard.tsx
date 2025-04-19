@@ -1,7 +1,7 @@
 import { PiDotsThreeOutlineVertical } from "react-icons/pi";
 import { MdOutlineInsertComment } from "react-icons/md";
 import { BiLike, BiDislike, BiSolidLike, BiSolidDislike } from "react-icons/bi";
-import React, { useState } from "react";
+import  { useState } from "react";
 import axios from "axios";
 
 export default function SavedPostCard({

@@ -7,7 +7,7 @@ import { useEffect, useState, useRef } from "react";
 import { AddPostFrom } from "../components/AddPostFrom";
 import axios from "axios";
 import { BsCameraFill } from "react-icons/bs";
-import { XCircle } from "lucide-react";
+import { Loader } from "lucide-react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
 import { Settings } from 'lucide-react';
 import { LogOut } from 'lucide-react';
@@ -471,8 +471,11 @@ await handleClickOnComment(postId);
         />
       )}
       {noPost && <div className="text-black flex flex-col justify-center items-center w-full">No Post</div>}
+      {loading && <div className="flex justify-center items-center h-screen w-full">
+        <Loader className="w-10 h-10 text-primary-100 animate-spin" />
+      </div>}
+        
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full md:p-4">
-        {loading && <div className="text-black">Loading...</div>}
         {posts.map((post) => {
           const alReadyLike = post.likedUsers.some(user => user.id === auth.id);
           const alReadyDisLike = post.dislikedUsers.some(user => user.id === auth.id)
@@ -511,7 +514,7 @@ await handleClickOnComment(postId);
           </button>
         </div>
         <Comment
-          postId={postId}
+          postId={postId || ""}
           likedUsers={likedUsers}
           dislikedUsers={dislikedUsers}
           comments={comments}
