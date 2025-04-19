@@ -4,6 +4,7 @@ import axios from "axios";
 import { authState } from "../recoilStates/auth/atom";
 import { useRecoilValue } from "recoil";
 import OtherUserProfileCard from "../components/OtherUserProfileCard";
+import { Loader } from "lucide-react";
 
 interface User {
   id: string;
@@ -154,7 +155,7 @@ const AllUsers = () => {
           </h1>
           {loading && (
             <div className="flex justify-center items-center h-96">
-              <h1 className="text-text-100 font-semibold">Loading...</h1>
+              <Loader className="w-10 h-10 text-primary-100 animate-spin" />
             </div>
           )}
 
