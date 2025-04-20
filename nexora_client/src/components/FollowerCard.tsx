@@ -15,7 +15,6 @@ const FollowerCard = (
       onUnfollowAndRemove: (userId: string, operation:boolean) => void;
     }
 ) => {
-    console.log(avtar)
   return (
     <div className="bg-bg-200 p-2 border border-primary-100 rounded-lg shadow-lg cursor-pointer relative w-[95%]">
             <div className="flex items-center gap-4">

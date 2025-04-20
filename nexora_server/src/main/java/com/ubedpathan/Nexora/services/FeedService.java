@@ -70,10 +70,6 @@ public class FeedService {
                 .toList();
 
         combinedPosts.addAll(randomPosts);
-        System.out.println("random posts "+randomPosts);
-        System.out.println("all combine posts"+combinedPosts);
-        System.out.println("all combine posts"+combinedPosts.size());
-
         // Get all post IDs
         List<String> postIds = combinedPosts.stream().map(PostEntity::getId).toList();
 

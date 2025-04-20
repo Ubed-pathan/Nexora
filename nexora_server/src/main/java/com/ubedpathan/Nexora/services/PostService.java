@@ -257,5 +257,15 @@
         }
 
 
+        public boolean handleDeletePost(String postId){
+            try{
+                postRepository.deleteById(postId);
+                return true;
+            }
+            catch(Exception e){
+                return false;
+            }
+        }
+
 
     }

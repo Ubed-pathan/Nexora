@@ -57,7 +57,6 @@ const Saved = () => {
       `${import.meta.env.VITE_SERVER_API}/save/${userId}/${postId}/deletePost`,
       { withCredentials: true }
     );
-    console.log(response);
     if (response.status === 200) {
       setSavedPosts((prevPosts) =>
         prevPosts.filter((post) => post.id !== postId)

@@ -45,80 +45,87 @@ const Home = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComment, setShowComment] = useState(false);
   const [postId, setPostId] = useState<string>();
-  const [refreshOnAddPost, setRefreshOnAddPost] = useState<boolean>(false);
+  const [stopFetch , setStopFetch] = useState<boolean>(false)
 
   const auth = useRecoilValue(authState);
 
   const fetchPosts = async () => {
-    if (loading || !hasMore) return;
+    if (loading || !hasMore || stopFetch) return;
     setLoading(true);
-
+  
     const before = lastPostDate ? lastPostDate : new Date().toISOString();
-
+  
     try {
       const res = await axios.get<PostResponseDto[]>(
         `${import.meta.env.VITE_SERVER_API}/feed/home`,
         {
-          params: {
-            before,
-          },
+          params: { before },
           withCredentials: true,
         }
       );
+  
       const newPosts = res.data;
-      console.log("newPosts", newPosts);
-
+  
+      if (newPosts.length === 0) {
+        setHasMore(false);
+        setStopFetch(true);
+        return;
+      }
+  
       setPosts((prevPosts) => {
         const existingPostIds = new Set(prevPosts.map((post) => post.id));
-        console.log("existingPostIds", existingPostIds);
         const uniquePosts = newPosts.filter(
           (post) => !existingPostIds.has(post.id)
         );
-        console.log("uniquePosts", uniquePosts);
-
+  
         if (uniquePosts.length === 0) {
           setHasMore(false);
+          setStopFetch(true);
           return prevPosts;
         }
-
+  
         const last = uniquePosts[uniquePosts.length - 1];
         setLastPostDate(last.createdAt);
-
+  
         return [...prevPosts, ...uniquePosts];
       });
     } catch (error) {
-      // console.error("Failed to fetch posts:", error);
+      console.error("Failed to fetch posts:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
+  
 
   useEffect(() => {
     fetchPosts();
   }, []);
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const entry = entries[0];
-        if (entry.isIntersecting && hasMore && !loading) {
-          fetchPosts();
-        }
-      },
-      { threshold: 1 }
-    );
+  if (stopFetch) return;
 
-    const currentLoader = loaderRef.current;
-    if (currentLoader) {
-      observer.observe(currentLoader);
-    }
-
-    return () => {
-      if (currentLoader) {
-        observer.unobserve(currentLoader);
+  const observer = new IntersectionObserver(
+    (entries) => {
+      const entry = entries[0];
+      if (entry.isIntersecting && hasMore && !loading && !stopFetch) {
+        fetchPosts();
       }
-    };
-  }, []);
+    },
+    { threshold: 1 }
+  );
+
+  const currentLoader = loaderRef.current;
+  if (currentLoader) {
+    observer.observe(currentLoader);
+  }
+
+  return () => {
+    if (currentLoader) {
+      observer.unobserve(currentLoader);
+    }
+  };
+}, [stopFetch, hasMore, loading]);
+
 
   async function handleSave(postId: string) {
     try {
@@ -151,9 +158,8 @@ const Home = () => {
     );
     if (response.status === 200) {
       setComments(response.data);
-      console.log("comments in home", comments);
     } else if (response.status === 202) {
-      // setComments(response.data);
+      //
     } else {
       setComments([]);
     }

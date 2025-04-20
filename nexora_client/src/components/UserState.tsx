@@ -18,7 +18,6 @@ const UserState = () => {
             })
 
             if(response.status == (200)){
-                console.log(response.data)
                 setAuthState({
                     isLoggedIn : true,
                     id: response.data.id,

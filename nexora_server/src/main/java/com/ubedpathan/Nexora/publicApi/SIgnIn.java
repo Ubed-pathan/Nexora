@@ -37,7 +37,7 @@ public class SIgnIn {
     public ResponseEntity<?> handleUserSignIn(@Valid @RequestBody SignInDto request, HttpServletResponse response){
         String token = userServices.handleUserSignIn(request);
         if(token == "fail" || token == null || token.isEmpty()){
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid username or password");
         }
 
         Cookie cookie = new Cookie("log", token);

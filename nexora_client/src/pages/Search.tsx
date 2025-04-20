@@ -25,7 +25,6 @@ const Search: React.FC = () => {
         `${import.meta.env.VITE_SERVER_API}/user/search?query=${searchTerm}`,
         { withCredentials: true }
       );
-      console.log(data);
       setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);

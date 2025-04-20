@@ -9,7 +9,6 @@ interface FollowingFollowersPageProps {
 }
 
 const FollowingFollowersPage: React.FC<FollowingFollowersPageProps> = ({ followers }) => {
-  console.log(followers)
   const [activeTab, setActiveTab] = useState<"followers" | "following">(followers ? "followers" : "following");
   const [data, setData] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
@@ -20,7 +19,6 @@ const FollowingFollowersPage: React.FC<FollowingFollowersPageProps> = ({ followe
     fetchData();
   }, [activeTab]);
 
-  console.log(activeTab)
 
   const fetchData = async () => {
     setLoading(true);

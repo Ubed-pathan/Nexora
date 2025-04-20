@@ -1,18 +1,18 @@
 import { FcAddImage } from "react-icons/fc";
 import PostCard from "../components/PostCardForProfile";
-import defaultDp from '../assets/OIP.jpg';
+import defaultDp from "../assets/OIP.jpg";
 import { authState, refreshUserState } from "../recoilStates/auth/atom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { useEffect, useState, useRef } from "react";
 import { AddPostFrom } from "../components/AddPostFrom";
 import axios from "axios";
 import { BsCameraFill } from "react-icons/bs";
-import { Loader } from "lucide-react";
+import { Filter, Loader } from "lucide-react";
 import { Bounce, toast, ToastContainer } from "react-toastify";
-import { Settings } from 'lucide-react';
-import { LogOut } from 'lucide-react';
+import { Settings } from "lucide-react";
+import { LogOut } from "lucide-react";
 import FollowingFollowersPage from "./FollowingFollowersPage";
-import Comment from '../components//Comment'
+import Comment from "../components//Comment";
 
 interface Post {
   id: string;
@@ -22,8 +22,8 @@ interface Post {
   description: string;
   likeCount?: number;
   dislikeCount?: number;
-  likedUsers?: []
-  dislikedUsers?: []
+  likedUsers?: [];
+  dislikedUsers?: [];
 }
 
 interface UserBasicInfo {
@@ -51,31 +51,27 @@ const Profile = () => {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loadingForProfileImage, setLoadingForProfileImage] = useState(false);
   const [profileImage, setProfileImage] = useState<File | null>(null);
-  const [settingOpen, setSettingOpen] = useState(false)
+  const [settingOpen, setSettingOpen] = useState(false);
   const setAuth = useSetRecoilState(authState);
-  const [isFollowingFollowersOpen, setIsFollowingFollowersOpen] = useState(false);
+  const [isFollowingFollowersOpen, setIsFollowingFollowersOpen] =
+    useState(false);
   const [followersToggle, setFollowersToggle] = useState(1);
-  const setRefreshUser = useSetRecoilState(refreshUserState)
-  const refresh = useRecoilValue(refreshUserState)
-  const [likedUsers , setLikedUsers] = useState<UserBasicInfo[]>([]);
-  const [dislikedUsers , setDislikedUsers] = useState<UserBasicInfo[]>([]);
-  const [comments , setComments] = useState<Comment[]>([]);
+  const setRefreshUser = useSetRecoilState(refreshUserState);
+  const refresh = useRecoilValue(refreshUserState);
+  const [likedUsers, setLikedUsers] = useState<UserBasicInfo[]>([]);
+  const [dislikedUsers, setDislikedUsers] = useState<UserBasicInfo[]>([]);
+  const [comments, setComments] = useState<Comment[]>([]);
   const [showComment, setShowComment] = useState(false);
   const [postId, setPostId] = useState<string>();
 
   useEffect(() => {
-    console.log(refresh.isRefreshed)
-    setRefreshUser({ isRefreshed: !refresh.isRefreshed })
-    console.log(refresh.isRefreshed)
-  }
-  , [])
-
+    setRefreshUser({ isRefreshed: !refresh.isRefreshed });
+  }, []);
 
   const handleImageClick = () => {
     fileInputRef.current?.click();
   };
 
-  
   const toggleFollowingFollowers = () => {
     setIsFollowingFollowersOpen(!isFollowingFollowersOpen);
   };
@@ -185,7 +181,6 @@ const Profile = () => {
           withCredentials: true,
         }
       );
-      console.log(response.data)
       if (response.status === 200) {
         setPosts(response.data as Post[]);
         setLoading(false);
@@ -201,116 +196,168 @@ const Profile = () => {
     }
   }, [auth.isLoggedIn, postAddedSuccess]);
 
-
   async function logout(): Promise<void> {
     try {
-        const response = await axios.post(`${import.meta.env.VITE_SERVER_API}/user/logout`,{}, {
-            withCredentials: true
+      const response = await axios.post(
+        `${import.meta.env.VITE_SERVER_API}/user/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.status === 200) {
+        setAuth({
+          isLoggedIn: false,
+          username: null,
+          email: null,
+          profileImageUrl: null,
+          id: null,
+          following: null,
+          followers: null,
         });
-        console.log(response.data);
-        if (response.status === 200) {
-            setAuth(
-                {
-                    isLoggedIn: false,
-                    username: null,
-                    email: null,
-                    profileImageUrl: null,
-                    id: null,
-                    following: null,
-                    followers: null
-                }
-            )
-        }
-        else {
-            //
-        }
-
+      } else {
+        //
+      }
     } catch (error) {
-        // console.log(error);
+      //
     }
-}
+  }
 
-
-async function handleClickOnComment(postId: string, ) {
-  posts.forEach((post) => {
-    if (post.id === postId) {
-      setLikedUsers(post.likedUsers.filter((user) => user.id !== auth.id));
-      setDislikedUsers(post.dislikedUsers.filter((user) => user.id !== auth.id));
+  async function handleClickOnComment(postId: string) {
+    posts.forEach((post) => {
+      if (post.id === postId) {
+        setLikedUsers(post.likedUsers.filter((user) => user.id !== auth.id));
+        setDislikedUsers(
+          post.dislikedUsers.filter((user) => user.id !== auth.id)
+        );
+      }
+    });
+    setPostId(postId);
+    const response = await axios.get<Comment[]>(
+      `${import.meta.env.VITE_SERVER_API}/comment/${postId}/getCommentsForPost`,
+      { withCredentials: true }
+    );
+    if (response.status === 200) {
+      setComments(response.data);
+    } else if (response.status === 202) {
+      //
+    } else {
+      setComments([]);
     }
-  })  
-  setPostId(postId)
-  const response = await axios.get<Comment[]>(
-    `${import.meta.env.VITE_SERVER_API}/comment/${postId}/getCommentsForPost`,
-    { withCredentials: true }
-  );
-  if (response.status === 200) {
-    setComments(response.data);
-    console.log("comments in home", comments);
+
+    setShowComment(true);
   }
-  else if(response.status === 202) {
-    // setComments(response.data);
-  }
-  else{
+
+  function handleCloseComment() {
+    setLikedUsers([]);
+    setDislikedUsers([]);
     setComments([]);
+    setShowComment(false);
   }
 
+  async function handleDelete(commentId: string): Promise<void> {
+    if (!commentId) {
+      return;
+    }
+
+    const response = await axios.delete(
+      `${import.meta.env.VITE_SERVER_API}/comment/${commentId}/delete`,
+      {
+        withCredentials: true,
+      }
+    );
+    if (response.status === 200) {
+      setComments((prevComments) =>
+        prevComments.filter((comment) => comment.commentId !== commentId)
+      );
+    }
+  }
+
+  async function handleAddComment(
+    postId: string,
+    message: string
+  ): Promise<void> {
+    if (!postId || !message) return;
+
+    const response = await axios.post(
+      `${import.meta.env.VITE_SERVER_API}/comment/${
+        auth.id
+      }/${postId}/addComment`,
+      {
+        message: message,
+      },
+      {
+        withCredentials: true,
+      }
+    );
+
+    if (response.status === 200) {
+      await handleClickOnComment(postId);
+    }
+  }
+
+
+  useEffect(() => {
+    if (showComment) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'auto';
+    }
   
-  setShowComment(true);
+    return () => {
+      document.body.style.overflow = 'auto';
+    };
+  }, [showComment]);
 
-}
 
-function handleCloseComment() {
-setLikedUsers([]);
-setDislikedUsers([]);
-setComments([]);
-setShowComment(false);
-}
+  async function handleDeletePost(postId: string) {
+    if(!postId) return;
+    
+    try{
+      const response = await axios.delete(`${import.meta.env.VITE_SERVER_API}/post/${postId}`,{
+        withCredentials: true,
+      })
 
-async function handleDelete(commentId: string): Promise<void> {
-if(!commentId){
-    return;
-}
-
-const response = await axios.delete(`${import.meta.env.VITE_SERVER_API}/comment/${commentId}/delete`, {
-  withCredentials: true,
-})
-if(response.status === 200){
-  setComments(prevComments => prevComments.filter(comment => comment.commentId !== commentId));
-}
-}
-
-async function handleAddComment(postId:string, message:string): Promise<void>{
-  if(!postId || !message) return;
-
-const response = await axios.post(`${import.meta.env.VITE_SERVER_API}/comment/${auth.id}/${postId}/addComment`,{
-  message: message
-},{
-withCredentials:true,
-})
-
-if(response.status === 200){
-await handleClickOnComment(postId);
-}
-}
+      if(response.status === 200){
+        setPosts((prevPosts: Post[]) => prevPosts.filter((post: Post) => post.id !== postId))
+      }
+    }
+    catch(err){
+      // 
+    }
+  }
+  
   return (
-    <div className="flex flex-col items-center min-h-screen w-full md:h-screen md:overflow-y-scroll md:scrollbar-thin md:scrollbar-thumb-rounded md:scrollbar-thumb-bg-300 md:scrollbar-track-bg-100" onClick={() => settingOpen && setSettingOpen(false)}>
+    <div
+      className="flex flex-col items-center min-h-screen w-full md:h-screen md:overflow-y-scroll md:scrollbar-thin md:scrollbar-thumb-rounded md:scrollbar-thumb-bg-300 md:scrollbar-track-bg-100"
+      onClick={() => settingOpen && setSettingOpen(false)}
+    >
       <div className="relative mr-2 mt-3 ml-auto">
-  <Settings
-    size={20}
-    className="text-black cursor-pointer"
-    onClick={() => setSettingOpen(!settingOpen)}
-  />
-  {settingOpen && (
-    <div className={`absolute right-0 top-full mt-2 bg-bg-300 w-24 py-2 px-1 rounded-lg shadow-lg z-10 
+        <Settings
+          size={20}
+          className="text-black cursor-pointer"
+          onClick={() => setSettingOpen(!settingOpen)}
+        />
+        {settingOpen && (
+          <div
+            className={`absolute right-0 top-full mt-2 bg-bg-300 w-24 py-2 px-1 rounded-lg shadow-lg z-10 
       transition-all duration-300 ease-in-out transform 
-      ${settingOpen ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 -translate-y-2 pointer-events-none"}`}>
-      <div className="flex justify-evenly items-center cursor-pointer" onClick={logout}>
-        <LogOut size={20} className="text-black"/>
-        <p className="text-black">logout</p>
+      ${
+        settingOpen
+          ? "opacity-100 scale-100 translate-y-0"
+          : "opacity-0 scale-95 -translate-y-2 pointer-events-none"
+      }`}
+          >
+            <div
+              className="flex justify-evenly items-center cursor-pointer"
+              onClick={logout}
+            >
+              <LogOut size={20} className="text-black" />
+              <p className="text-black">logout</p>
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  )}
-</div>
       <div className="flex justify-center mt-4 md:w-[35%] w-[98%] p-2 md:p-0">
         <div className="flex flex-col w-full items-center">
           <div className="flex flex-row w-full justify-between ">
@@ -414,22 +461,25 @@ await handleClickOnComment(postId);
                   {totalPosts}
                 </div>
               </div>
-              <div className="flex flex-col items-center cursor-pointer" 
-              onClick={() => {
-                setIsFollowingFollowersOpen(true)
-                setFollowersToggle(0);
-                }}>
+              <div
+                className="flex flex-col items-center cursor-pointer"
+                onClick={() => {
+                  setIsFollowingFollowersOpen(true);
+                  setFollowersToggle(0);
+                }}
+              >
                 <div className="text-text-100 font-semibold">Followers</div>
                 <div className="font-semibold text-primary-100">
                   {auth.followers}
                 </div>
               </div>
-              <div className="flex flex-col items-center cursor-pointer" 
+              <div
+                className="flex flex-col items-center cursor-pointer"
                 onClick={() => {
-                setIsFollowingFollowersOpen(true)
-                setFollowersToggle(1);
+                  setIsFollowingFollowersOpen(true);
+                  setFollowersToggle(1);
                 }}
-                >
+              >
                 <div className="text-text-100 font-semibold">Following</div>
                 <div className="font-semibold text-primary-100">
                   {auth.following}
@@ -457,7 +507,9 @@ await handleClickOnComment(postId);
             >
               ✖
             </button>
-            <FollowingFollowersPage followers={followersToggle == 0 ? true : false} />
+            <FollowingFollowersPage
+              followers={followersToggle == 0 ? true : false}
+            />
           </div>
         </div>
       )}
@@ -470,15 +522,25 @@ await handleClickOnComment(postId);
           setPostAddedSuccess={setPostAddedSuccess}
         />
       )}
-      {noPost && <div className="text-black flex flex-col justify-center items-center w-full">No Post</div>}
-      {loading && <div className="flex flex-col justify-center items-center w-full">
-        <Loader className="w-10 h-10 text-primary-100 animate-spin" />
-      </div>}
-        
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full md:p-4">
+      {noPost && (
+        <div className="text-black flex flex-col justify-center items-center w-full">
+          No Post
+        </div>
+      )}
+      {loading && (
+        <div className="flex flex-col justify-center items-center w-full">
+          <Loader className="w-10 h-10 text-primary-100 animate-spin" />
+        </div>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full md:p-4 mb-14">
         {posts.map((post) => {
-          const alReadyLike = post.likedUsers.some(user => user.id === auth.id);
-          const alReadyDisLike = post.dislikedUsers.some(user => user.id === auth.id)
+          const alReadyLike = post.likedUsers.some(
+            (user) => user.id === auth.id
+          );
+          const alReadyDisLike = post.dislikedUsers.some(
+            (user) => user.id === auth.id
+          );
           return (
             <PostCard
               key={post.id}
@@ -490,6 +552,7 @@ await handleClickOnComment(postId);
               disLikes={post.dislikeCount}
               alReadyLike={alReadyLike}
               alReadyDisLike={alReadyDisLike}
+              handleDelete={handleDeletePost}
               handleClickOnComment={handleClickOnComment}
             />
           );
@@ -497,36 +560,35 @@ await handleClickOnComment(postId);
       </div>
 
       {showComment && (
-  <>
-    {/* Backdrop */}
-    <div className="fixed inset-0 bg-black bg-opacity-50 z-50 backdrop-blur-lg mt-0"></div>
+        <>
+          {/* Backdrop */}
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 backdrop-blur-lg mt-0"></div>
 
-    {/* Comments Container */}
-    <div className="fixed inset-0 z-50 flex justify-center items-center h-screen">
-      <div className="bg-bg-300 p-6 rounded-lg w-full max-w-lg shadow-lg">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-semibold">Comments</h2>
-          <button
-            onClick={handleCloseComment}
-            className="text-gray-500 hover:text-gray-700"
-          >
-            Close
-          </button>
-        </div>
-        <Comment
-          postId={postId || ""}
-          likedUsers={likedUsers}
-          dislikedUsers={dislikedUsers}
-          comments={comments}
-          handleDelete={handleDelete}
-          handleCloseComment={handleCloseComment}
-          onAddComment={handleAddComment}
-        />
-      </div>
-    </div>
-  </>
-)}
-
+          {/* Comments Container */}
+          <div className="fixed inset-0 z-50 flex justify-center items-center h-screen">
+            <div className="bg-bg-300 p-6 rounded-lg w-full max-w-lg shadow-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Comments</h2>
+                <button
+                  onClick={handleCloseComment}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  Close
+                </button>
+              </div>
+              <Comment
+                postId={postId || ""}
+                likedUsers={likedUsers}
+                dislikedUsers={dislikedUsers}
+                comments={comments}
+                handleDelete={handleDelete}
+                handleCloseComment={handleCloseComment}
+                onAddComment={handleAddComment}
+              />
+            </div>
+          </div>
+        </>
+      )}
 
       <ToastContainer
         position="top-center"
@@ -546,5 +608,3 @@ await handleClickOnComment(postId);
 };
 
 export default Profile;
-
-

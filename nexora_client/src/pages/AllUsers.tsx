@@ -95,12 +95,10 @@ const AllUsers = () => {
 
   useEffect(() => {
     if (selectedUser) {
-      document.body.style.overflow = "hidden"; // Lock scroll
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = "auto"; // Unlock scroll
+      document.body.style.overflow = "auto";
     }
-
-    // Clean up in case component unmounts
     return () => {
       document.body.style.overflow = "auto";
     };
@@ -130,7 +128,6 @@ const AllUsers = () => {
 
             <OtherUserProfileCard
               user={selectedUser}
-              onClose={() => setSelectedUser(null)}
               onFollowChange={(userId, newStatus) => {
                 setAllUsers((prev) =>
                   prev.map((u) =>

@@ -23,11 +23,6 @@ const UserSearchCard = (
               <span className="text-text-200 text-sm">Followed by {followedBy}</span>
             </div>
         </div>
-        {/* <div className="flex justify-center items-center">
-          <h1 className="text-blue-700 font-semibold cursor-pointer hover:text-primary-100">
-          Follow
-          </h1>
-        </div> */}
         </div>
     </div>
     </>

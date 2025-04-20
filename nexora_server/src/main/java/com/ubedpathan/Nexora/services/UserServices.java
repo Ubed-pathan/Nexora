@@ -61,7 +61,6 @@ public class UserServices {
             userRepository.save(userEntity);
             return true;
         } catch (Exception e) {
-            log.info("Error During UserSingUp", e);
             return false;
         }
     }

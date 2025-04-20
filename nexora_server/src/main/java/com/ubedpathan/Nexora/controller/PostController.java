@@ -116,5 +116,19 @@ public class PostController {
 
     }
 
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<?> handleDeletePost(@PathVariable String postId){
+        if(postId == null || postId.isEmpty()){
+            return ResponseEntity.badRequest().body("Please provide a post ID.");
+        }
+        boolean isPostDeleted = postService.handleDeletePost(postId);
+        if(isPostDeleted){
+            return ResponseEntity.ok("post deleted successfully");
+        }
+        else{
+            return ResponseEntity.status(500).body("fail to delete post");
+        }
+    }
+
 
 }

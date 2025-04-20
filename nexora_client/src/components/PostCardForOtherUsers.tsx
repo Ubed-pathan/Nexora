@@ -13,7 +13,7 @@ export default function PostCardForProfile({
   disLikes,
   alReadyLike,
   alReadyDisLike,
-  handleDelete,
+  handleSave,
   handleClickOnComment,
 }: {
   postId: string;
@@ -24,7 +24,7 @@ export default function PostCardForProfile({
   disLikes?: number;
   alReadyLike: boolean;
   alReadyDisLike: boolean;
-  handleDelete: (postId: string) => void;
+  handleSave: (postId: string) => void;
   handleClickOnComment: (postId: string) => void;
 }) {
   const [clickOnThreeDots, setClickOnThreeDots] = React.useState(false);
@@ -124,11 +124,11 @@ export default function PostCardForProfile({
                 <div
                   className="text-gray-800 cursor-pointer"
                   onClick={() => {
+                    handleSave(postId)
                     setClickOnThreeDots(!clickOnThreeDots)
-                    handleDelete(postId)
                   }}
                 >
-                  Delete
+                  Save
                 </div>
               </div>
             )}

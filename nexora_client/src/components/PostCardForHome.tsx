@@ -17,6 +17,7 @@ export default function PostCardForHome({
   alReadyDisLike = false,
   handleSave,
   handleClickOnComment,
+  onUserClick
 }: {
   postId: string;
   avtar: string;
@@ -30,6 +31,11 @@ export default function PostCardForHome({
   alReadyDisLike?: boolean;
   handleSave: (postId: string) => void;
   handleClickOnComment: (postId: string) => void;
+  onUserClick: (userData: {
+    id: string;
+    username: string;
+    avtar: string;
+  }) => void;
 }) {
   const [clickOnThreeDots, setClickOnThreeDots] = useState(false);
   const [isLiked, setIsLiked] = useState(alReadyLike);

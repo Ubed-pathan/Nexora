@@ -15,10 +15,14 @@ interface CommentPageProps {
   postId: string;
   likedUsers: UserBasicInfo[];
   dislikedUsers: UserBasicInfo[];
-  comments: { commentId: string; message: string; userId: string;
+  comments: {
+    commentId: string;
+    message: string;
+    userId: string;
     username: string;
-    secureImageUrl: string;}[];
-  onAddComment?: (postId:string, message: string) => void;
+    secureImageUrl: string;
+  }[];
+  onAddComment?: (postId: string, message: string) => void;
   handleDelete?: (commentId: string) => void;
 }
 
@@ -39,7 +43,7 @@ const CommentPage: React.FC<CommentPageProps> = ({
 
   const handleAddComment = () => {
     if (newComment.trim() && onAddComment) {
-      onAddComment(postId,newComment.trim());
+      onAddComment(postId, newComment.trim());
       setNewComment("");
     }
   };
@@ -52,21 +56,21 @@ const CommentPage: React.FC<CommentPageProps> = ({
             <p className="text-gray-500">No likes yet.</p>
           ) : (
             likedUsers.map((user) => (
-                <div
-                  key={user.id}
-                  className="flex items-center gap-4 p-4 border rounded-lg shadow-sm bg-blue-50"
-                >
-                  <img
-                    src={user.secureImageUrl || man}
-                    alt="avatar"
-                    className="h-12 w-12 rounded-full object-cover border"
-                  />
-                  <div>
-                    <p className="font-semibold text-gray-800">{user.username}</p>
-                    <p className="text-sm text-blue-600">Liked this post</p>
-                  </div>
+              <div
+                key={user.id}
+                className="flex items-center gap-4 p-4 border rounded-lg shadow-sm bg-blue-50"
+              >
+                <img
+                  src={user.secureImageUrl || man}
+                  alt="avatar"
+                  className="h-12 w-12 rounded-full object-cover border"
+                />
+                <div>
+                  <p className="font-semibold text-gray-800">{user.username}</p>
+                  <p className="text-sm text-blue-600">Liked this post</p>
                 </div>
-              ))
+              </div>
+            ))
           )}
         </div>
       );
@@ -75,36 +79,35 @@ const CommentPage: React.FC<CommentPageProps> = ({
     if (activeTab === "dislike") {
       return (
         <div className="space-y-3">
-{dislikedUsers.length === 0 ? (
-  <p className="text-gray-500">No dislikes yet.</p>
-) : (
-  dislikedUsers.map((user) => (
-    <div
-      key={user.id}
-      className="flex items-center gap-4 p-4 border rounded-lg shadow-sm bg-red-50"
-    >
-      <img
-        src={user.secureImageUrl || man}
-        alt="avatar"
-        className="h-12 w-12 rounded-full object-cover border"
-      />
-      <div>
-        <p className="font-semibold text-gray-800">{user.username}</p>
-        <p className="text-sm text-red-600">Disliked this post</p>
-      </div>
-    </div>
-  ))
-)}
-
+          {dislikedUsers.length === 0 ? (
+            <p className="text-gray-500">No dislikes yet.</p>
+          ) : (
+            dislikedUsers.map((user) => (
+              <div
+                key={user.id}
+                className="flex items-center gap-4 p-4 border rounded-lg shadow-sm bg-red-50"
+              >
+                <img
+                  src={user.secureImageUrl || man}
+                  alt="avatar"
+                  className="h-12 w-12 rounded-full object-cover border"
+                />
+                <div>
+                  <p className="font-semibold text-gray-800">{user.username}</p>
+                  <p className="text-sm text-red-600">Disliked this post</p>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       );
     }
 
     if (activeTab === "comment") {
       return (
-        <div className="space-y-4">
-          {/* Comments List */}
-          <div className="space-y-3">
+        <div className="flex flex-col gap-4 h-[400px]">
+          {/* Comments List - Scrollable */}
+          <div className="overflow-y-auto flex-1 pr-1 space-y-3">
             {comments.length === 0 ? (
               <p className="text-gray-500">No comments yet.</p>
             ) : (
@@ -120,18 +123,16 @@ const CommentPage: React.FC<CommentPageProps> = ({
                       className="h-9 w-9 rounded-full object-cover border"
                     />
                     <div>
-                      <p className="font-semibold text-gray-800">{comment.username}</p>
+                      <p className="font-semibold text-gray-800">
+                        {comment.username}
+                      </p>
                       <p className="text-gray-700">{comment.message}</p>
                     </div>
                   </div>
-              
-                  {/* 👇 Show delete button if comment belongs to current user */}
+      
                   {comment.userId === auth.id && (
                     <button
-                      onClick={() => {
-                         handleDelete?.(comment.commentId)
-                        //  console.log(comment.commentId)
-                        }}
+                      onClick={() => handleDelete?.(comment.commentId)}
                       className="text-red-500 hover:text-red-700 text-sm"
                     >
                       Delete
@@ -139,11 +140,10 @@ const CommentPage: React.FC<CommentPageProps> = ({
                   )}
                 </div>
               ))
-              
             )}
           </div>
-
-          {/* New Comment Input */}
+      
+          {/* New Comment Input (Fixed) */}
           <div className="pt-4 border-t">
             <textarea
               value={newComment}
@@ -161,6 +161,7 @@ const CommentPage: React.FC<CommentPageProps> = ({
           </div>
         </div>
       );
+      
     }
   };
 

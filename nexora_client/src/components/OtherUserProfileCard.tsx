@@ -1,9 +1,22 @@
-    import PostCard from "../components/PostCardForProfile";
+    import PostCard from "../components/PostCardForOtherUsers";
     import defaultDp from "../assets/OIP.jpg";
     import { authState, refreshUserState } from "../recoilStates/auth/atom";
     import { useRecoilValue, useSetRecoilState } from "recoil";
     import { useEffect, useState } from "react";
+    import Comment from './Comment';
     import axios from "axios";
+
+    interface UserBasicInfo {
+        id: string;
+        username: string;
+        secureImageUrl: string;
+      }
+      
+      interface Comment {
+        commentId: string;
+        message: string;
+        user: UserBasicInfo;
+      }
 
     interface Post {
     id: string;
@@ -24,11 +37,10 @@
         secureImageUrl: string | null;
         following: boolean;
     };
-    onClose: () => void;
     onFollowChange?: (userId: string, newStatus: boolean) => void;
     };
 
-    const OtherUserProfileCard = ({ user, onClose, onFollowChange }: OtherUserProfileCardProps) => {
+    const OtherUserProfileCard = ({ user, onFollowChange }: OtherUserProfileCardProps) => {
     const auth = useRecoilValue(authState);
     const [posts, setPosts] = useState<Post[]>([]);
     const [loading, setLoading] = useState(false);
@@ -37,6 +49,11 @@
     const setRefreshUser = useSetRecoilState(refreshUserState);
     const refresh = useRecoilValue(refreshUserState);
     const [isFollowing, setIsFollowing] = useState(user.following);
+    const [likedUsers, setLikedUsers] = useState<UserBasicInfo[]>([]);
+    const [dislikedUsers, setDislikedUsers] = useState<UserBasicInfo[]>([]);
+    const [comments, setComments] = useState<Comment[]>([]);
+    const [showComment, setShowComment] = useState(false);
+    const [postId, setPostId] = useState<string>();
 
     useEffect(() => {
         setIsFollowing(user.following);
@@ -83,6 +100,95 @@
         }
         }
     }, [auth.isLoggedIn]);
+
+
+    async function handleClickOnComment(postId: string) {
+        posts.forEach((post) => {
+          if (post.id === postId) {
+            setLikedUsers(post.likedUsers.filter((user) => user.id !== auth.id));
+            setDislikedUsers(
+              post.dislikedUsers.filter((user) => user.id !== auth.id)
+            );
+          }
+        });
+        setPostId(postId);
+        const response = await axios.get<Comment[]>(
+          `${import.meta.env.VITE_SERVER_API}/comment/${postId}/getCommentsForPost`,
+          { withCredentials: true }
+        );
+        if (response.status === 200) {
+          setComments(response.data);
+        } else if (response.status === 202) {
+          //
+        } else {
+          setComments([]);
+        }
+    
+        setShowComment(true);
+      }
+
+      function handleCloseComment() {
+        setLikedUsers([]);
+        setDislikedUsers([]);
+        setComments([]);
+        setShowComment(false);
+      }
+
+      async function handleAddComment(
+        postId: string,
+        message: string
+      ): Promise<void> {
+        if (!postId || !message) return;
+    
+        const response = await axios.post(
+          `${import.meta.env.VITE_SERVER_API}/comment/${
+            auth.id
+          }/${postId}/addComment`,
+          {
+            message: message,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+    
+        if (response.status === 200) {
+          await handleClickOnComment(postId);
+        }
+      }
+
+      async function handleSave(postId: string) {
+        try {
+          const response = await axios.post(
+            `${import.meta.env.VITE_SERVER_API}/save/${auth.id}/${postId}/post`,
+            {},
+            { withCredentials: true }
+          );
+          if (response.status === 200) {
+            //
+          }
+        } catch (error) {
+          console.error("Error saving post:", error);
+        }
+      }
+
+      async function handleDelete(commentId: string): Promise<void> {
+        if (!commentId) {
+          return;
+        }
+    
+        const response = await axios.delete(
+          `${import.meta.env.VITE_SERVER_API}/comment/${commentId}/delete`,
+          {
+            withCredentials: true,
+          }
+        );
+        if (response.status === 200) {
+          setComments((prevComments) =>
+            prevComments.filter((comment) => comment.commentId !== commentId)
+          );
+        }
+      }
 
     return (
         <div className="flex flex-col items-center min-h-screen w-full">
@@ -163,10 +269,41 @@
                 disLikes={post.dislikeCount}
                 alReadyLike={alReadyLike}
                 alReadyDisLike={alReadyDisLike}
+                handleSave={handleSave}
+                handleClickOnComment={handleClickOnComment}
                 />
             );
             })}
         </div>
+        {showComment && (
+        <>
+          {/* Backdrop */}
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 backdrop-blur-lg mt-0"></div>
+
+          {/* Comments Container */}
+          <div className="fixed inset-0 z-50 flex justify-center items-center h-screen">
+            <div className="bg-bg-300 p-6 rounded-lg w-full max-w-lg shadow-lg">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold">Comments</h2>
+                <button
+                  onClick={handleCloseComment}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  Close
+                </button>
+              </div>
+              <Comment
+                postId={postId}
+                likedUsers={likedUsers}
+                dislikedUsers={dislikedUsers}
+                comments={comments}
+                handleDelete={handleDelete}
+                onAddComment={handleAddComment}
+              />
+            </div>
+          </div>
+        </>
+      )}
         </div>
     );
     };

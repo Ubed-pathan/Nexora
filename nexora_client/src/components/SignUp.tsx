@@ -27,53 +27,76 @@ function SignUp() {
         }));
     }
 
+    function isBlank(value: string): boolean {
+        return value.trim() === "";
+      }
+
     async function handleSignUp(e: FormEvent): Promise<void> {
         e.preventDefault();
-        const response: AxiosResponse = await axios.post(`${import.meta.env.VITE_SERVER_API}/public/signup`, signUpData);
-        if (response.status === 200) {
-
-            toast.success("😀 signed up successfully", {
-                position: "top-center",
-                autoClose: 1000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                transition: Bounce,
+        
+          if (isBlank(signUpData.username) || isBlank(signUpData.email) || isBlank(signUpData.password)) {
+            toast.error("Fields cannot be blank or just spaces", {
+              position: "top-center",
+              autoClose: 2000,
+              theme: "dark",
+              transition: Bounce,
             });
-
-            setSignUpData({
-                username: '',
-                email: '',
-                password: ''
-            });
-
-            setTimeout(() => {
-                navigate('/SignIn');
-            }, 1100);
-            
-        } else {
-            toast.error('😓 sign up failed', {
-                position: "top-center",
-                autoClose: 2000,
-                hideProgressBar: false,
-                closeOnClick: false,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                theme: "dark",
-                transition: Bounce,
+            return;
+          }
+    
+        try {
+            const response: AxiosResponse = await axios.post(
+                `${import.meta.env.VITE_SERVER_API}/public/signup`,
+                signUpData
+            );
+    
+            // ✅ Success
+            if (response.status === 200) {
+                toast.success("😀 Signed up successfully", {
+                    position: "top-center",
+                    autoClose: 1000,
+                    theme: "dark",
+                    transition: Bounce,
                 });
-
+    
                 setSignUpData({
                     username: '',
                     email: '',
                     password: ''
                 });
+    
+                setTimeout(() => {
+                    navigate('/SignIn');
+                }, 1100);
+            }
+    
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 409) {
+                    toast.error(error.response.data, {
+                        position: "top-center",
+                        autoClose: 2000,
+                        theme: "dark",
+                        transition: Bounce,
+                    });
+    
+                    setSignUpData({
+                        username: '',
+                        email: '',
+                        password: ''
+                    });
+                } else {
+                    toast.error("Something went wrong!", {
+                        position: "top-center",
+                        autoClose: 2000,
+                        theme: "dark",
+                        transition: Bounce,
+                    });
+                }
+            }
         }
     }
+    
     return (
         <>
             <div>

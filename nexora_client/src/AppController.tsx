@@ -18,49 +18,16 @@ import { ReactElement } from "react";
 import { Loader } from "lucide-react";
 
 function ProtectedRoute({ element, isLoggedIn }: { element: ReactElement; isLoggedIn: boolean }) {
-    console.log(isLoggedIn)
     return isLoggedIn ? element : <Navigate to="/signin" />;
 }
 
 
 export function MainApp() {
     const auth = useRecoilValue(authState);
-    // const setAuthState = useSetRecoilState(authState);
     const {loading} = UserState();
     const location = useLocation();  // Get the current location
 
     const showSuggestions = ["/", "/search", "/allusers"].includes(location.pathname);
-    console.log("hello")
-    console.log(auth.isLoggedIn)
-    // useEffect(() => {
-    //     async function checkLoginStatus() {
-    //         try {
-    //             const response = await axios.get(`${import.meta.env.VITE_SERVER_API}/todo/user/status`, {
-    //                 withCredentials: true,
-    //             });
-    //             if (response.status === 200) {
-    //                 setAuthState({
-    //                     isLoggedIn: true,
-    //                     username: response.data.username,
-    //                     email: response.data.email,
-    //                 });
-    //             } else {
-    //                 setAuthState({ isLoggedIn: false, username: null, email: null });
-    //             }
-    //         } catch (error) {
-    //             setAuthState({ isLoggedIn: false, username: null, email: null });
-    //         } finally {
-    //             setIsLoading(false);
-    //         }
-    //     }
-    //     checkLoginStatus();
-    // }, [setAuthState]);
-
-    // if (isLoading) {
-
-    //     return <div className='flex flex-col justify-center items-center w-screen h-screen'><CircularProgress size={40} /></div>;
-    //     // <div className="text-center mt-20 text-xl">Loading...</div>;
-    // }
 
     if (loading) {
         return (
@@ -85,8 +52,6 @@ export function MainApp() {
                                 <Route path="/allusers" element={<ProtectedRoute element={<AllUsers />} isLoggedIn={auth.isLoggedIn} />} />
                                 <Route path="/saved" element={<ProtectedRoute element={<Saved />} isLoggedIn={auth.isLoggedIn} />} />
                                 <Route path="/profile" element={<ProtectedRoute element={<Profile />} isLoggedIn={auth.isLoggedIn} />} />
-                                {/* <Route path="/signup" element={<SignUp />} />
-                        <Route path="/signin" element={<SignIn />} /> */}
                                 <Route path="/signin" element={<Navigate to='/' />} />
                                 <Route path="/signup" element={<Navigate to='/' />} />
                             </Routes>

@@ -1,6 +1,8 @@
 package com.ubedpathan.Nexora.repositories;
 
 import com.ubedpathan.Nexora.models.UserEntity;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -25,4 +27,6 @@ public interface UserRepository extends JpaRepository<UserEntity, String> {
             @Param("excludedIds") Set<String> excludedIds,
             Pageable pageable
     );
+
+    Optional<UserEntity> findByUsernameOrEmail(@NotBlank(message = "Username is mandatory") String username, @NotBlank(message = "Email is mandatory") @Email(message = "Email should be valid") String email);
 }
