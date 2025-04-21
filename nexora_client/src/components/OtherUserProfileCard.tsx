@@ -35,7 +35,7 @@
         id: string;
         username: string;
         secureImageUrl: string | null;
-        following: boolean;
+        following: boolean | null;
     };
     onFollowChange?: (userId: string, newStatus: boolean) => void;
     };

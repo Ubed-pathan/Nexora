@@ -110,7 +110,7 @@ export default function PostCardForHome({
     >
       <div className="p-3">
         <div className="flex justify-between items-center">
-        {/* onClick={() => onUserClick({id:userId, username:userName, avtar})} */}
+           {/* onClick={() => onUserClick({id:userId, username:userName, avtar})} */}
           <div className="flex items-center gap-4">
             <div className="h-12 w-12 border-2 border-primary-100 rounded-full overflow-hidden">
               <img

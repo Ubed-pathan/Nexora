@@ -20,7 +20,7 @@ const UserSearchCard = (
           </div>
             <div>
               <h1 className="text-text-100 font-semibold">{username}</h1>
-              <span className="text-text-200 text-sm">Followed by {followedBy}</span>
+              {/* <span className="text-text-200 text-sm">Followed by {followedBy}</span> */}
             </div>
         </div>
         </div>

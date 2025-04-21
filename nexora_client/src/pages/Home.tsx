@@ -235,13 +235,12 @@ const Home = () => {
   //   id: string;
   //   username: string;
   //   avtar: string;
-  //   following: boolean;
   // }) => {
   //   setSelectedUser({
   //     id: userData.id,
   //     username: userData.username,
   //     secureImageUrl: userData.avtar,
-  //     following: userData.following,
+  //     following: null,
   //   });
   // };
 
@@ -281,7 +280,6 @@ const Home = () => {
               //     id: post.user.id,
               //     username: post.user.username,
               //     avtar: post.user.secureImageUrl || "",
-              //     following: user.following,
               //   })
               // }
             />
