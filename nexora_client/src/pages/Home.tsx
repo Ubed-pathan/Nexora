@@ -6,6 +6,7 @@ import { authState } from "../recoilStates/auth/atom";
 import { useRecoilValue } from "recoil";
 import man from "../assets/OIP.jpg";
 import Comment from "../components/Comment";
+import OtherUserProfileCard from "../components/OtherUserProfileCard";
 
 interface UserBasicInfo {
   id: string;
@@ -34,6 +35,20 @@ interface PostResponseDto {
   user: UserBasicInfo;
 }
 
+// interface User {
+//   id: string;
+//   secureImageUrl: string | null;
+//   username: string;
+//   following: boolean;
+// }
+
+// interface SelectedUserdata {
+//   id: string;
+//   username: string;
+//   secureImageUrl: string | null;
+//   following: boolean;
+// }
+
 const Home = () => {
   const [posts, setPosts] = useState<PostResponseDto[]>([]);
   const [loading, setLoading] = useState(false);
@@ -45,16 +60,19 @@ const Home = () => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [showComment, setShowComment] = useState(false);
   const [postId, setPostId] = useState<string>();
-  const [stopFetch , setStopFetch] = useState<boolean>(false)
+  const [stopFetch, setStopFetch] = useState<boolean>(false);
+  // const [selectedUser, setSelectedUser] = useState<SelectedUserdata | null>(
+  //   null
+  // );
 
   const auth = useRecoilValue(authState);
 
   const fetchPosts = async () => {
     if (loading || !hasMore || stopFetch) return;
     setLoading(true);
-  
+
     const before = lastPostDate ? lastPostDate : new Date().toISOString();
-  
+
     try {
       const res = await axios.get<PostResponseDto[]>(
         `${import.meta.env.VITE_SERVER_API}/feed/home`,
@@ -63,30 +81,30 @@ const Home = () => {
           withCredentials: true,
         }
       );
-  
+
       const newPosts = res.data;
-  
+
       if (newPosts.length === 0) {
         setHasMore(false);
         setStopFetch(true);
         return;
       }
-  
+
       setPosts((prevPosts) => {
         const existingPostIds = new Set(prevPosts.map((post) => post.id));
         const uniquePosts = newPosts.filter(
           (post) => !existingPostIds.has(post.id)
         );
-  
+
         if (uniquePosts.length === 0) {
           setHasMore(false);
           setStopFetch(true);
           return prevPosts;
         }
-  
+
         const last = uniquePosts[uniquePosts.length - 1];
         setLastPostDate(last.createdAt);
-  
+
         return [...prevPosts, ...uniquePosts];
       });
     } catch (error) {
@@ -95,37 +113,35 @@ const Home = () => {
       setLoading(false);
     }
   };
-  
 
   useEffect(() => {
     fetchPosts();
   }, []);
 
   useEffect(() => {
-  if (stopFetch) return;
+    if (stopFetch) return;
 
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const entry = entries[0];
-      if (entry.isIntersecting && hasMore && !loading && !stopFetch) {
-        fetchPosts();
-      }
-    },
-    { threshold: 1 }
-  );
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && hasMore && !loading && !stopFetch) {
+          fetchPosts();
+        }
+      },
+      { threshold: 1 }
+    );
 
-  const currentLoader = loaderRef.current;
-  if (currentLoader) {
-    observer.observe(currentLoader);
-  }
-
-  return () => {
+    const currentLoader = loaderRef.current;
     if (currentLoader) {
-      observer.unobserve(currentLoader);
+      observer.observe(currentLoader);
     }
-  };
-}, [stopFetch, hasMore, loading]);
 
+    return () => {
+      if (currentLoader) {
+        observer.unobserve(currentLoader);
+      }
+    };
+  }, [stopFetch, hasMore, loading]);
 
   async function handleSave(postId: string) {
     try {
@@ -215,6 +231,24 @@ const Home = () => {
     }
   }
 
+  // const handleUserClick = (userData: {
+  //   id: string;
+  //   username: string;
+  //   avtar: string;
+  //   following: boolean;
+  // }) => {
+  //   setSelectedUser({
+  //     id: userData.id,
+  //     username: userData.username,
+  //     secureImageUrl: userData.avtar,
+  //     following: userData.following,
+  //   });
+  // };
+
+  // function onFollowChange(userId:string, newStatus:boolean){
+  //   // 
+  // }
+
   return (
     <div className="md:h-screen md:overflow-y-scroll md:mx-20 md:scrollbar-thin md:scrollbar-thumb-rounded md:scrollbar-thumb-bg-300 md:scrollbar-track-bg-100">
       <div className="mt-4 mb-16 md:space-y-4 md:px-14">
@@ -229,6 +263,7 @@ const Home = () => {
           return (
             <PostCard
               key={post.id}
+              userId={post.user.id}
               postId={post.id}
               avtar={post.user.secureImageUrl || man}
               desc={post.description}
@@ -241,6 +276,14 @@ const Home = () => {
               alReadyDisLike={alReadyDisLike}
               handleSave={handleSave}
               handleClickOnComment={handleClickOnComment}
+              // onUserClick={() =>
+              //   handleUserClick({
+              //     id: post.user.id,
+              //     username: post.user.username,
+              //     avtar: post.user.secureImageUrl || "",
+              //     following: user.following,
+              //   })
+              // }
             />
           );
         })}
@@ -287,6 +330,34 @@ const Home = () => {
           </div>
         </>
       )}
+
+      {/* {selectedUser && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30 backdrop-blur-lg">
+          <div
+            className="absolute inset-0"
+            onClick={() => setSelectedUser(null)}
+          />
+
+          <div className="relative bg-bg-100 p-4 shadow-lg z-10 w-[90%] h-[90%] overflow-y-auto md:scrollbar-thin md:scrollbar-thumb-rounded md:scrollbar-thumb-bg-300 md:scrollbar-track-bg-100">
+            <button
+              onClick={() => setSelectedUser(null)}
+              className="absolute top-3 right-3 text-purple-500 text-xl font-bold hover:text-purple-700 transition"
+              aria-label="Close"
+            >
+              ✖
+            </button>
+
+            <h1 className="text-xl text-center mb-4 text-primary-100">
+              User Profile
+            </h1>
+
+            <OtherUserProfileCard
+              user={selectedUser}
+              onFollowChange={onFollowChange}
+            />
+          </div>
+        </div>
+      )} */}
     </div>
   );
 };

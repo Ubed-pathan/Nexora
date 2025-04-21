@@ -80,7 +80,7 @@ const Search: React.FC = () => {
                 key={user.username}
                 avtar={user.profileImageUrl ? user.profileImageUrl : defaultDp}
                 username={user.username}
-                followedBy={user.followedBy || "Unknown"}
+                followedBy={user.followedBy || ""}
               />
             ))
           ) : (
