@@ -18,7 +18,7 @@ const UserSearchCard = (
         <div className="h-12 w-12 border-2 border-primary-100 rounded-full overflow-hidden">
             <img src={avtar} alt="Avatar" className="object-cover w-full h-full" />
           </div>
-            <div>
+            <div className="flex justify-center items-center">
               <h1 className="text-text-100 font-semibold">{username}</h1>
               {/* <span className="text-text-200 text-sm">Followed by {followedBy}</span> */}
             </div>
