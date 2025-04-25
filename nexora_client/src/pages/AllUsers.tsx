@@ -145,8 +145,8 @@ const AllUsers = () => {
         </div>
       )}
 
-      <div className="flex justify-center w-full min-h-screen p-4">
-        <div className="w-full max-w-md">
+      <div className="flex justify-center w-full h-screen p-4">
+        <div className="w-full max-w-md ">
           <h1 className="text-xl text-center mb-4 text-primary-100">
             All Users
           </h1>
@@ -157,7 +157,7 @@ const AllUsers = () => {
           )}
 
           {!loading && allUsers.length !== 0 ? (
-            <div className="space-y-2 w-full">
+            <div className="space-y-2 w-full pb-16 md:pb-0 md:h-[95%] md:overflow-y-scroll md:scrollbar-thin md:scrollbar-thumb-rounded md:scrollbar-thumb-bg-300 md:scrollbar-track-bg-100 md:px-2">
               {allUsers.map((user) => {
                 return (
                   <AllUsersCard

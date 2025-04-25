@@ -2,15 +2,16 @@ import { useEffect, useState } from "react";
 import { Search as SearchIcon } from "lucide-react";
 import axios from "axios";
 import UserSearchCard from "../components/UserSearchCard";
-import { useRecoilValue } from "recoil";
-import { authState } from "../recoilStates/auth/atom";
-import defaultDp from '../assets/OIP.jpg';
+import defaultDp from "../assets/OIP.jpg";
+import OtherUserProfileCard from "../components/OtherUserProfileCard";
 
 const Search: React.FC = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
   const [query, setQuery] = useState<string>("");
-  const auth = useRecoilValue(authState);
+  const [selectedUser, setSelectedUser] = useState<SelectedUserdata | null>(
+    null
+  );
 
   // Function to fetch users (Debounced)
   const fetchUsers = async (searchTerm: string) => {
@@ -40,6 +41,34 @@ const Search: React.FC = () => {
 
     return () => clearTimeout(delaySearch); // Cleanup previous timeout
   }, [query]);
+
+  const handleUserClick = (userData: {
+    id: string;
+    username: string;
+    avtar: string;
+  }) => {
+    setSelectedUser({
+      id: userData.id,
+      username: userData.username,
+      secureImageUrl: userData.avtar,
+      following: null,
+    });
+  };
+
+  function onFollowChange(userId: string, newStatus: boolean) {
+    //
+  }
+
+  useEffect(() => {
+    if (selectedUser) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [selectedUser]);
 
   return (
     <div className="relative w-[90%] md:w-full max-w-md mx-auto mt-20 md:mt-10">
@@ -77,15 +106,50 @@ const Search: React.FC = () => {
           ) : users.length > 0 ? (
             users.map((user: any) => (
               <UserSearchCard
-                key={user.username}
-                avtar={user.profileImageUrl ? user.profileImageUrl : defaultDp}
+                key={user.id}
+                userId={user.id}
+                avtar={user.secureImageUrl ? user.secureImageUrl : defaultDp}
                 username={user.username}
-                followedBy={user.followedBy || ""}
+                onUserClick={() =>
+                  handleUserClick({
+                    id: user.id,
+                    username: user.username,
+                    avtar: user.secureImageUrl || "",
+                  })
+                }
               />
             ))
           ) : (
             <p className="p-3 text-gray-500">No users found</p>
           )}
+        </div>
+      )}
+
+      {selectedUser && (
+        <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30 backdrop-blur-lg">
+          <div
+            className="absolute inset-0"
+            onClick={() => setSelectedUser(null)}
+          />
+
+          <div className="relative bg-bg-100 p-4 shadow-lg z-10 w-[90%] h-[90%] overflow-y-auto md:scrollbar-thin md:scrollbar-thumb-rounded md:scrollbar-thumb-bg-300 md:scrollbar-track-bg-100">
+            <button
+              onClick={() => setSelectedUser(null)}
+              className="absolute top-3 right-3 text-purple-500 text-xl font-bold hover:text-purple-700 transition"
+              aria-label="Close"
+            >
+              ✖
+            </button>
+
+            <h1 className="text-xl text-center mb-4 text-primary-100">
+              User Profile
+            </h1>
+
+            <OtherUserProfileCard
+              user={selectedUser}
+              onFollowChange={onFollowChange}
+            />
+          </div>
         </div>
       )}
     </div>

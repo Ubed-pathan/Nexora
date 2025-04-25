@@ -1,18 +1,24 @@
 
 const UserSearchCard = (
     {
-        avtar,
+      avtar,
+      userId,
       username,
-      followedBy,
+      onUserClick,
     }: {
       avtar: string;
+      userId: string;
       username: string;
-      followedBy: string;
+      onUserClick: (userData: {
+        id: string;
+        username: string;
+        avtar: string;
+      }) => void;
     }
 ) => {
   return (
     <>
-       <div className="bg-bg-200 p-2 border border-primary-100 rounded-lg shadow-lg cursor-pointer">
+       <div className="bg-bg-200 p-2 border border-primary-100 rounded-lg shadow-lg cursor-pointer" onClick={() => onUserClick({id:userId, username:username, avtar})}>
         <div className="flex justify-between">
         <div className="flex justify-start gap-4">
         <div className="h-12 w-12 border-2 border-primary-100 rounded-full overflow-hidden">

@@ -2,15 +2,21 @@ const SuggestionCard = ({
   id,
   avtar,
   username,
-  handleFollow
+  handleFollow,
+  onUserClick,
 }: {
   id:string;
   avtar: string;
   username: string;
   handleFollow(id : string ) : void;
+  onUserClick: (userData: {
+    id: string;
+    username: string;
+    avtar: string;
+  }) => void;
 }) => {
   return (
-    <div className="bg-bg-200 p-2 border border-primary-100 rounded-lg shadow-lg">
+    <div className="bg-bg-200 p-2 border border-primary-100 rounded-lg shadow-lg" onClick={() => onUserClick({id, username:username, avtar})}>
         <div className="flex justify-between">
         <div className="flex justify-start gap-4">
         <div className="h-12 w-12 border-2 border-primary-100 rounded-full overflow-hidden">

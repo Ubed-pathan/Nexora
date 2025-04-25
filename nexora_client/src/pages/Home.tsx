@@ -35,19 +35,19 @@ interface PostResponseDto {
   user: UserBasicInfo;
 }
 
-// interface User {
-//   id: string;
-//   secureImageUrl: string | null;
-//   username: string;
-//   following: boolean;
-// }
+interface User {
+  id: string;
+  secureImageUrl: string | null;
+  username: string;
+  following: boolean;
+}
 
-// interface SelectedUserdata {
-//   id: string;
-//   username: string;
-//   secureImageUrl: string | null;
-//   following: boolean;
-// }
+interface SelectedUserdata {
+  id: string;
+  username: string;
+  secureImageUrl: string | null;
+  following: boolean;
+}
 
 const Home = () => {
   const [posts, setPosts] = useState<PostResponseDto[]>([]);
@@ -61,9 +61,9 @@ const Home = () => {
   const [showComment, setShowComment] = useState(false);
   const [postId, setPostId] = useState<string>();
   const [stopFetch, setStopFetch] = useState<boolean>(false);
-  // const [selectedUser, setSelectedUser] = useState<SelectedUserdata | null>(
-  //   null
-  // );
+  const [selectedUser, setSelectedUser] = useState<SelectedUserdata | null>(
+    null
+  );
 
   const auth = useRecoilValue(authState);
 
@@ -231,22 +231,33 @@ const Home = () => {
     }
   }
 
-  // const handleUserClick = (userData: {
-  //   id: string;
-  //   username: string;
-  //   avtar: string;
-  // }) => {
-  //   setSelectedUser({
-  //     id: userData.id,
-  //     username: userData.username,
-  //     secureImageUrl: userData.avtar,
-  //     following: null,
-  //   });
-  // };
+  const handleUserClick = (userData: {
+    id: string;
+    username: string;
+    avtar: string;
+  }) => {
+    setSelectedUser({
+      id: userData.id,
+      username: userData.username,
+      secureImageUrl: userData.avtar,
+      following: null,
+    });
+  };
 
-  // function onFollowChange(userId:string, newStatus:boolean){
-  //   // 
-  // }
+  function onFollowChange(userId:string, newStatus:boolean){
+    // 
+  }
+
+  useEffect(() => {
+    if (selectedUser) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [selectedUser]);
 
   return (
     <div className="md:h-screen md:overflow-y-scroll md:mx-20 md:scrollbar-thin md:scrollbar-thumb-rounded md:scrollbar-thumb-bg-300 md:scrollbar-track-bg-100">
@@ -275,13 +286,13 @@ const Home = () => {
               alReadyDisLike={alReadyDisLike}
               handleSave={handleSave}
               handleClickOnComment={handleClickOnComment}
-              // onUserClick={() =>
-              //   handleUserClick({
-              //     id: post.user.id,
-              //     username: post.user.username,
-              //     avtar: post.user.secureImageUrl || "",
-              //   })
-              // }
+              onUserClick={() =>
+                handleUserClick({
+                  id: post.user.id,
+                  username: post.user.username,
+                  avtar: post.user.secureImageUrl || "",
+                })
+              }
             />
           );
         })}
@@ -329,7 +340,7 @@ const Home = () => {
         </>
       )}
 
-      {/* {selectedUser && (
+      {selectedUser && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-30 backdrop-blur-lg">
           <div
             className="absolute inset-0"
@@ -355,7 +366,7 @@ const Home = () => {
             />
           </div>
         </div>
-      )} */}
+      )}
     </div>
   );
 };

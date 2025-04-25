@@ -54,10 +54,57 @@
     const [comments, setComments] = useState<Comment[]>([]);
     const [showComment, setShowComment] = useState(false);
     const [postId, setPostId] = useState<string>();
+    const [follower, setFollower] = useState(0);
+    const [following, setFollowing] = useState(0);
 
     useEffect(() => {
-        setIsFollowing(user.following);
-    }, [user]);
+      async function executeCheckFollowing() {
+        if (user.following === null) {
+          await checkFollowing();
+        }else{
+          setIsFollowing(user.following);
+        }
+        
+      }
+      executeCheckFollowing();
+      async function checkFollowing() {
+        try {
+          const response = await axios.get(
+            `${import.meta.env.VITE_SERVER_API}/follow/${auth.id}/${user.id}/checkFollowing`,
+            { withCredentials: true }
+          );
+          if (response.status === 200) {
+            setIsFollowing(response.data);
+          } else {
+            setIsFollowing(false);
+          }
+        }
+        catch(err){
+          setIsFollowing(false);
+        }
+      }
+
+      async function checkFollowerAndFollowingCount(){
+        try{
+          const response = await axios.get(
+            `${import.meta.env.VITE_SERVER_API}/follow/${user.id}/countFollowerAndFollowing`,
+            { withCredentials: true }
+          );
+          if (response.status === 200) {
+            setFollower(response.data.followers);
+            setFollowing(response.data.following);
+          } else {
+            setFollower(0);
+            setFollowing(0);
+          }
+        }
+        catch(err){
+          setFollower(0);
+          setFollowing(0);
+        }
+      }
+      checkFollowerAndFollowingCount();
+    }, []);
     
 
     useEffect(() => {
@@ -72,6 +119,7 @@
         const newFollowStatus = !isFollowing;
         setIsFollowing(newFollowStatus);
         onFollowChange?.(user.id, newFollowStatus);
+        setFollower((prev) => (newFollowStatus ? prev + 1 : prev - 1));
     } catch (err) {
         // console.error("Error while toggling follow:", err);
     }
@@ -219,13 +267,13 @@
                 <div className="flex flex-col items-center cursor-pointer">
                     <div className="text-text-100 font-semibold">Followers</div>
                     <div className="font-semibold text-primary-100">
-                    {auth.followers}
+                    {follower}
                     </div>
                 </div>
                 <div className="flex flex-col items-center cursor-pointer">
                     <div className="text-text-100 font-semibold">Following</div>
                     <div className="font-semibold text-primary-100">
-                    {auth.following}
+                    {following}
                     </div>
                 </div>
                 </div>

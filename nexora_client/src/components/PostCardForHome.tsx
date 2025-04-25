@@ -18,7 +18,7 @@ export default function PostCardForHome({
   alReadyDisLike = false,
   handleSave,
   handleClickOnComment,
-  // onUserClick
+  onUserClick
 }: {
   userId: string;
   postId: string;
@@ -33,11 +33,11 @@ export default function PostCardForHome({
   alReadyDisLike?: boolean;
   handleSave: (postId: string) => void;
   handleClickOnComment: (postId: string) => void;
-  // onUserClick: (userData: {
-  //   id: string;
-  //   username: string;
-  //   avtar: string;
-  // }) => void;
+  onUserClick: (userData: {
+    id: string;
+    username: string;
+    avtar: string;
+  }) => void;
 }) {
   const [clickOnThreeDots, setClickOnThreeDots] = useState(false);
   const [isLiked, setIsLiked] = useState(alReadyLike);
@@ -110,9 +110,8 @@ export default function PostCardForHome({
     >
       <div className="p-3">
         <div className="flex justify-between items-center">
-           {/* onClick={() => onUserClick({id:userId, username:userName, avtar})} */}
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 border-2 border-primary-100 rounded-full overflow-hidden">
+          <div className="flex items-center gap-4" onClick={() => onUserClick({id:userId, username:userName, avtar})}>
+            <div className="h-12 w-12 border-2 border-primary-100 rounded-full overflow-hidden cursor-pointer">
               <img
                 src={avtar}
                 alt="Avatar"
@@ -120,7 +119,7 @@ export default function PostCardForHome({
               />
             </div>
             <div>
-              <h3 className="font-semibold text-lg text-gray-800">
+              <h3 className="font-semibold text-lg text-gray-800 cursor-pointer">
                 {userName}
               </h3>
               <p className="text-sm text-gray-500">{formatTimeAgo(date)}</p>
