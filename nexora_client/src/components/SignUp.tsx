@@ -9,7 +9,12 @@ interface SignUpDataType {
     email: string,
     password: string
 }
-
+const Loader = () => (
+    <div className="flex justify-center">
+      <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin" />
+    </div>
+);
+  
 function SignUp() {
 
     const [signUpData, setSignUpData] = useState<SignUpDataType>({
@@ -17,6 +22,7 @@ function SignUp() {
         email: '',
         password: ''
     })
+    const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
 
@@ -33,8 +39,9 @@ function SignUp() {
 
     async function handleSignUp(e: FormEvent): Promise<void> {
         e.preventDefault();
-        
+        setLoading(true);
           if (isBlank(signUpData.username) || isBlank(signUpData.email) || isBlank(signUpData.password)) {
+            setLoading(false);
             toast.error("Fields cannot be blank or just spaces", {
               position: "top-center",
               autoClose: 2000,
@@ -52,6 +59,7 @@ function SignUp() {
     
             // ✅ Success
             if (response.status === 200) {
+                setLoading(false);
                 toast.success("😀 Signed up successfully", {
                     position: "top-center",
                     autoClose: 1000,
@@ -94,8 +102,14 @@ function SignUp() {
                     });
                 }
             }
+            setLoading(false);
+        }
+        finally {
+            setLoading(false);
         }
     }
+
+   
     
     return (
         <>
@@ -160,7 +174,7 @@ function SignUp() {
                                 type="submit"
                                 className="w-full bg-text-100 text-bg-100 py-2 px-4 rounded-lg hover:bg-accent-100 transition-colors"
                             >
-                                SignUp
+                                {loading ? <Loader /> : 'Sign Up'}
                             </button>
                         </form>
                         <h1 className='mt-10 text-center text-text-100'>

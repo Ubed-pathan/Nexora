@@ -10,6 +10,12 @@ interface SignInDataType {
   password: string;
 }
 
+const Loader = () => (
+  <div className="flex justify-center">
+    <div className="w-6 h-6 border-4 border-white border-t-transparent rounded-full animate-spin" />
+  </div>
+);
+
 function SignIn() {
   const navigate = useNavigate();
   const setAuthState = useSetRecoilState(authState);
@@ -18,6 +24,7 @@ function SignIn() {
     username: "",
     password: "",
   });
+  const [loading, setLoading] = useState(false);
 
   function handleChange(e: ChangeEvent<HTMLInputElement>) {
     setSignInData((prevData) => ({
@@ -33,8 +40,9 @@ function SignIn() {
 
   async function handleSignIn(e: FormEvent): Promise<void> {
     e.preventDefault();
-  
+    setLoading(true);
     if (isBlank(signInData.username) || isBlank(signInData.password)) {
+      setLoading(false);
       toast.error("Fields cannot be blank or just spaces", {
         position: "top-center",
         autoClose: 2000,
@@ -54,6 +62,7 @@ function SignIn() {
       );
   
       if (response.status === 200) {
+        setLoading(false);
         toast.success("😄 signed in successfully", {
           position: "top-center",
           autoClose: 1000,
@@ -83,6 +92,7 @@ function SignIn() {
         }, 1100);
       }
     } catch (error: any) {
+      setLoading(false);
       toast.error("Invalid Username or Password", {
         position: "top-center",
         autoClose: 2000,
@@ -91,6 +101,9 @@ function SignIn() {
       });
   
       setSignInData({ username: "", password: "" });
+    }
+    finally{
+      setLoading(false);
     }
   }
   
@@ -136,7 +149,7 @@ function SignIn() {
                 type="submit"
                 className="w-full bg-text-100 text-bg-100 py-2 px-4 rounded-lg hover:bg-text-200 transition-colors"
               >
-                SignIn
+                {loading ? <Loader /> : 'Sign In'}
               </button>
             </form>
             <h1 className="mt-10 text-center text-text-100">
