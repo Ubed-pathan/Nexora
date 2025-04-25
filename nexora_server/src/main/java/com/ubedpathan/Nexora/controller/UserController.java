@@ -3,6 +3,7 @@ package com.ubedpathan.Nexora.controller;
 import com.ubedpathan.Nexora.auth.CustomAuthenticationToken;
 import com.ubedpathan.Nexora.dtos.AllUserResponseDto;
 import com.ubedpathan.Nexora.dtos.SuggestionsUserDto;
+import com.ubedpathan.Nexora.dtos.UserDto;
 import com.ubedpathan.Nexora.models.UserEntity;
 import com.ubedpathan.Nexora.services.UserServices;
 import jakarta.servlet.http.Cookie;
@@ -58,7 +59,11 @@ public class UserController {
     public ResponseEntity<?> handleGetSearchUsers(@RequestParam String query){
         if(!query.isEmpty() || query != null){
             List<UserEntity> users = userServices.handleGetSearchUsers(query);
-            return ResponseEntity.ok(users);
+            return ResponseEntity.ok(users.stream().map(u -> new SuggestionsUserDto(
+                    u.getId(),
+                    u.getUsername(),
+                    u.getSecureImageUrl()
+            )));
         }
         return ResponseEntity.badRequest().body("Fail to search users");
 

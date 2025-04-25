@@ -25,7 +25,6 @@ public interface FollowersRepository extends JpaRepository<FollowersEntity, Stri
 
     Optional<FollowersEntity> findByFollowerAndFollowee(UserEntity follower, UserEntity followee);
 
-    Arrays findByFollowerId(String currentUserId);
 
     @Query("SELECT f.followee.id FROM FollowersEntity f WHERE f.follower.id = :userId")
     Set<String> findFollowedUserIdsByUserId(@Param("userId") String userId);
