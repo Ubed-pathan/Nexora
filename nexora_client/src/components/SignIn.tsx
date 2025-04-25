@@ -153,7 +153,7 @@ function SignIn() {
               </button>
             </form>
             <h1 className="mt-10 text-center text-text-100">
-              Already have an account:{" "}
+              Don't have an account:{" "}
               <a
                 className="cursor-pointer text-primary-100 underline"
                 onClick={() => navigate("/signup")}
