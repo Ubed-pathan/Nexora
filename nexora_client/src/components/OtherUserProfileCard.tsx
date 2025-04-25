@@ -5,6 +5,7 @@
     import { useEffect, useState } from "react";
     import Comment from './Comment';
     import axios from "axios";
+import { Loader } from "lucide-react";
 
     interface UserBasicInfo {
         id: string;
@@ -297,8 +298,11 @@
             No Post
             </div>
         )}
+        {loading && <div className="flex justify-center items-center h-screen w-screen">
+            <Loader className="w-10 h-10 text-primary-100 animate-spin" />
+          </div>}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full md:p-4">
-            {loading && <div className="text-black">Loading...</div>}
+            
             {posts.map((post) => {
             const alReadyLike = post.likedUsers.some(
                 (user) => user.id === auth.id
